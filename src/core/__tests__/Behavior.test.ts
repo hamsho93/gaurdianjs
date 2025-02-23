@@ -1,4 +1,5 @@
 import { analyzeBehavior } from '../Behavior';
+import { BehaviorPattern } from '../../types';
 
 describe('Behavior Analysis', () => {
   const mockReq = {
@@ -35,14 +36,10 @@ describe('Behavior Analysis', () => {
   });
 
   test('should handle empty behavior data', async () => {
-    const mockReq = {
-      body: {}
-    };
-
-    const result = await analyzeBehavior(mockReq);
+    const result = await analyzeBehavior({});
     expect(result.isBot).toBe(false);
     expect(result.confidence).toBe(0.8);
-    expect(result.patterns).toEqual({
+    expect(result.patterns[0]).toEqual({
       mouseMovements: 0,
       scrollPatterns: 0,
       interactionSpeed: 0
