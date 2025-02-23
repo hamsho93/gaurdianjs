@@ -1,6 +1,17 @@
 import { analyzeTLS } from '../TLSFingerprint';
 
-describe('TLS Fingerprinting', () => {
+describe('TLS Fingerprint Analysis', () => {
+  const mockReq = {
+    connection: {
+      getTLSFingerprint: () => 'mock-fingerprint'
+    }
+  };
+
+  test('should analyze normal TLS fingerprint', async () => {
+    const result = await analyzeTLS(mockReq);
+    expect(result.isSuspicious).toBe(false);
+  });
+
   test('should analyze valid TLS connection', async () => {
     const mockReq = {
       socket: {

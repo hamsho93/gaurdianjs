@@ -1,37 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateConfig = void 0;
+exports.validateConfig = validateConfig;
 const default_1 = require("../config/default");
-const validateConfig = (config) => {
-    const validatedConfig = {
+function validateConfig(config) {
+    return {
         ...default_1.defaultConfig,
         ...config
     };
-    // Validate threshold
-    if (typeof validatedConfig.threshold !== 'number' ||
-        validatedConfig.threshold < 0 ||
-        validatedConfig.threshold > 1) {
-        throw new Error('Threshold must be a number between 0 and 1');
-    }
-    // Validate timeoutMs
-    if (typeof validatedConfig.timeoutMs !== 'number' || validatedConfig.timeoutMs < 0) {
-        throw new Error('Timeout must be a positive number');
-    }
-    // Validate maxRequestsPerMinute
-    if (typeof validatedConfig.maxRequestsPerMinute !== 'number' ||
-        validatedConfig.maxRequestsPerMinute < 0) {
-        throw new Error('MaxRequestsPerMinute must be a positive number');
-    }
-    // Validate arrays
-    validateArrays(validatedConfig.whitelist);
-    validateArrays(validatedConfig.blacklist);
-    // Validate custom rules
-    if (validatedConfig.customRules) {
-        validatedConfig.customRules.forEach(validateCustomRule);
-    }
-    return validatedConfig;
-};
-exports.validateConfig = validateConfig;
+}
 const validateArrays = (list) => {
     if (!Array.isArray(list.ips)) {
         throw new Error('IPs must be an array');

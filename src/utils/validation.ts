@@ -1,41 +1,12 @@
-import { GuardianConfig } from '../types/config';
+import { GuardianConfig } from '../types';
 import { defaultConfig } from '../config/default';
 
-export const validateConfig = (config: Partial<GuardianConfig>): GuardianConfig => {
-  const validatedConfig: GuardianConfig = {
+export function validateConfig(config: Partial<GuardianConfig>): GuardianConfig {
+  return {
     ...defaultConfig,
     ...config
   };
-
-  // Validate threshold
-  if (typeof validatedConfig.threshold !== 'number' || 
-      validatedConfig.threshold < 0 || 
-      validatedConfig.threshold > 1) {
-    throw new Error('Threshold must be a number between 0 and 1');
-  }
-
-  // Validate timeoutMs
-  if (typeof validatedConfig.timeoutMs !== 'number' || validatedConfig.timeoutMs < 0) {
-    throw new Error('Timeout must be a positive number');
-  }
-
-  // Validate maxRequestsPerMinute
-  if (typeof validatedConfig.maxRequestsPerMinute !== 'number' || 
-      validatedConfig.maxRequestsPerMinute < 0) {
-    throw new Error('MaxRequestsPerMinute must be a positive number');
-  }
-
-  // Validate arrays
-  validateArrays(validatedConfig.whitelist);
-  validateArrays(validatedConfig.blacklist);
-
-  // Validate custom rules
-  if (validatedConfig.customRules) {
-    validatedConfig.customRules.forEach(validateCustomRule);
-  }
-
-  return validatedConfig;
-};
+}
 
 const validateArrays = (list: { ips: string[]; userAgents: string[]; paths?: string[]; patterns?: RegExp[] }) => {
   if (!Array.isArray(list.ips)) {

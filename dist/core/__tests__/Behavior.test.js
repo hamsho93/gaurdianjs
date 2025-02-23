@@ -2,6 +2,17 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Behavior_1 = require("../Behavior");
 describe('Behavior Analysis', () => {
+    const mockReq = {
+        headers: {
+            'user-agent': 'Mozilla/5.0'
+        },
+        ip: '127.0.0.1'
+    };
+    test('should analyze normal behavior', async () => {
+        const result = await (0, Behavior_1.analyzeBehavior)(mockReq);
+        expect(result.isBot).toBe(false);
+        expect(result.confidence).toBeGreaterThan(0);
+    });
     test('should analyze normal user behavior patterns', async () => {
         const mockReq = {
             body: {

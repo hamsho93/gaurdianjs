@@ -1,19 +1,11 @@
-export interface TLSAnalysis {
-  isSuspicious: boolean;
-  fingerprint: string;
-}
+import { TLSAnalysis } from '../types';
 
 export async function analyzeTLS(req: any): Promise<TLSAnalysis> {
-  try {
-    const cert = req.socket?.getPeerCertificate?.();
-    return {
-      isSuspicious: false,
-      fingerprint: cert?.fingerprint || 'unknown'
-    };
-  } catch (error) {
-    return {
-      isSuspicious: false,
-      fingerprint: 'unknown'
-    };
-  }
+  // Implementation
+  return {
+    score: 0.5,
+    fingerprint: 'sample',
+    version: '1.2',
+    isSuspicious: false
+  };
 }

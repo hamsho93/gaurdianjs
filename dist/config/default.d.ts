@@ -1,2 +1,2 @@
-import { GuardianConfig } from '../types/config';
+import { GuardianConfig } from '../types';
 export declare const defaultConfig: GuardianConfig;

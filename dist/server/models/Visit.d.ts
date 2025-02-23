@@ -7,8 +7,8 @@ export declare const Visit: mongoose.Model<{
     clientId: string;
     sessionId: string;
     events: mongoose.Types.DocumentArray<{
-        type: string;
         timestamp: number;
+        type: string;
         target?: string | undefined;
     }>;
     userAgent?: string | undefined;
@@ -20,8 +20,8 @@ export declare const Visit: mongoose.Model<{
     clientId: string;
     sessionId: string;
     events: mongoose.Types.DocumentArray<{
-        type: string;
         timestamp: number;
+        type: string;
         target?: string | undefined;
     }>;
     userAgent?: string | undefined;
@@ -33,8 +33,8 @@ export declare const Visit: mongoose.Model<{
     clientId: string;
     sessionId: string;
     events: mongoose.Types.DocumentArray<{
-        type: string;
         timestamp: number;
+        type: string;
         target?: string | undefined;
     }>;
     userAgent?: string | undefined;
@@ -51,8 +51,8 @@ export declare const Visit: mongoose.Model<{
     clientId: string;
     sessionId: string;
     events: mongoose.Types.DocumentArray<{
-        type: string;
         timestamp: number;
+        type: string;
         target?: string | undefined;
     }>;
     userAgent?: string | undefined;
@@ -64,8 +64,8 @@ export declare const Visit: mongoose.Model<{
     clientId: string;
     sessionId: string;
     events: mongoose.Types.DocumentArray<{
-        type: string;
         timestamp: number;
+        type: string;
         target?: string | undefined;
     }>;
     userAgent?: string | undefined;
@@ -77,8 +77,8 @@ export declare const Visit: mongoose.Model<{
     clientId: string;
     sessionId: string;
     events: mongoose.Types.DocumentArray<{
-        type: string;
         timestamp: number;
+        type: string;
         target?: string | undefined;
     }>;
     userAgent?: string | undefined;

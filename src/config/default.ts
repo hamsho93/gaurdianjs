@@ -1,30 +1,14 @@
-import { GuardianConfig } from '../types/config';
+import { GuardianConfig } from '../types';
 
 export const defaultConfig: GuardianConfig = {
-  threshold: 0.8,
+  endpoint: 'http://localhost:3000/track',
+  trackingEnabled: true,
+  detectionThreshold: 0.8,
+  trackingInterval: 1000,
+  bufferSize: 10,
+  useTLS: true,
+  useBehavior: true,
+  threshold: 0.7,
   enableBehaviorAnalysis: true,
-  enableTLSFingerprinting: true,
-  enableUserAgentAnalysis: true,
-  timeoutMs: 5000,
-  maxRequestsPerMinute: 100,
-  whitelist: {
-    ips: [],
-    userAgents: [
-      'GoogleBot',
-      'Bingbot',
-      'Slurp'
-    ],
-    paths: [
-      '/health',
-      '/metrics'
-    ]
-  },
-  blacklist: {
-    ips: [],
-    userAgents: [],
-    patterns: [
-      /[<>]|javascript:|data:|about:|file:/i,
-      /eval\(|alert\(|prompt\(|confirm\(/i
-    ]
-  }
+  customRules: []
 }; 

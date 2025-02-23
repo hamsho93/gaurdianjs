@@ -1,7 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const TLSFingerprint_1 = require("../TLSFingerprint");
-describe('TLS Fingerprinting', () => {
+describe('TLS Fingerprint Analysis', () => {
+    const mockReq = {
+        connection: {
+            getTLSFingerprint: () => 'mock-fingerprint'
+        }
+    };
+    test('should analyze normal TLS fingerprint', async () => {
+        const result = await (0, TLSFingerprint_1.analyzeTLS)(mockReq);
+        expect(result.isSuspicious).toBe(false);
+    });
     test('should analyze valid TLS connection', async () => {
         const mockReq = {
             socket: {

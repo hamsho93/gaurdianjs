@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { analyzeUA, UAAnalysis } from './UserAgent';
-import { analyzeTLS, TLSAnalysis } from './TLSFingerprint';
-import { analyzeBehavior, BehaviorAnalysis } from './Behavior';
+import { analyzeTLS } from './TLSFingerprint';
+import { analyzeBehavior } from './Behavior';
 import { defaultConfig } from '../config/default';
-import { GuardianConfig, TrackingEvent } from '../types';
+import { GuardianConfig, TrackingEvent, TLSAnalysis, BehaviorAnalysis } from '../types';
 
 export interface DetectionResult {
   verdict: boolean;
@@ -54,18 +54,35 @@ export class GuardianJS {
     }
   }
 
-  isBot(params: { userAgent: string; ip: string }): boolean {
-    // Simple bot detection logic
-    const { userAgent } = params;
-    return /bot|crawler|spider|googlebot/i.test(userAgent);
+  async isBot(params: { userAgent: string; ip: string; req?: any }): Promise<boolean> {
+    const { userAgent, ip, req } = params;
+    
+    if (/bot|crawler|spider|googlebot/i.test(userAgent)) {
+      return true;
+    }
+
+    if (req && (this.config.useTLS || this.config.useBehavior)) {
+      const results = {
+        tls: this.config.useTLS ? await analyzeTLS(req) : null,
+        behavior: this.config.useBehavior ? await analyzeBehavior(req) : null
+      };
+
+      return Boolean(
+        results.tls?.isSuspicious ||
+        results.behavior?.isBot
+      );
+    }
+
+    return false;
   }
 
   middleware() {
-    return (req: any, res: any, next: any) => {
+    return async (req: any, res: any, next: any) => {
       const userAgent = req.headers['user-agent'] || '';
       const ip = req.ip;
 
-      if (this.isBot({ userAgent, ip })) {
+      const isBot = await this.isBot({ userAgent, ip, req });
+      if (isBot) {
         return res.status(403).json({ error: 'Bot detected' });
       }
 
