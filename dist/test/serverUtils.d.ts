@@ -1,7 +1,5 @@
-/// <reference types="node" />
 import { Server } from 'http';
-export declare const setupTestServer: () => Promise<{
-    server: Server;
-    port: number;
-}>;
-export declare const cleanupTestServer: () => Promise<void>;
+export declare const setupTestServer: () => Promise<Server>;
+export declare const teardownTestServer: () => Promise<void>;
+export declare const getTestServer: () => Server | null;
+export declare const resetTestServer: () => Promise<void>;

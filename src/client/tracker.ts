@@ -52,7 +52,7 @@ export class GuardianTracker {
    * @param {TrackerConfig} config - Configuration options
    * @throws {Error} When endpoint is not provided
    */
-  constructor(config: { endpoint: string; bufferSize?: number; flushInterval?: number }) {
+  constructor(config: TrackerConfig) {
     if (!config.endpoint) {
       throw new Error('Endpoint is required');
     }
@@ -78,16 +78,4 @@ export class GuardianTracker {
   destroy(): void {
     // Implementation needed
   }
-}
-
-// Most basic possible class
-class Tracker {
-  endpoint: string;
-
-  constructor(endpoint: string) {
-    this.endpoint = endpoint;
-  }
-}
-
-// Export the class directly
-module.exports = GuardianTracker; 
+} 

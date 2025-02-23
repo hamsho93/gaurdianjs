@@ -1,24 +1,26 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.cleanupTestServer = exports.setupTestServer = void 0;
-const http_1 = require("http");
+exports.resetTestServer = exports.getTestServer = exports.teardownTestServer = exports.setupTestServer = void 0;
 const express_1 = require("../middleware/express");
+let server = null;
 const setupTestServer = async () => {
-    const server = (0, http_1.createServer)((req, res) => {
-        res.writeHead(200);
-        res.end('Test server');
-    });
-    await new Promise((resolve) => {
-        server.listen(0, () => resolve());
-    });
-    const address = server.address();
-    const port = address.port;
-    return { server, port };
+    server = await (0, express_1.startServer)(0);
+    return server;
 };
 exports.setupTestServer = setupTestServer;
-const cleanupTestServer = async () => {
-    await (0, express_1.closeServer)();
-    // Allow event loop to clear
-    await new Promise(resolve => setTimeout(resolve, 100));
+const teardownTestServer = async () => {
+    if (server) {
+        await (0, express_1.closeServer)(server);
+        server = null;
+    }
 };
-exports.cleanupTestServer = cleanupTestServer;
+exports.teardownTestServer = teardownTestServer;
+const getTestServer = () => server;
+exports.getTestServer = getTestServer;
+const resetTestServer = async () => {
+    if (server) {
+        await (0, express_1.closeServer)(server);
+        server = null;
+    }
+};
+exports.resetTestServer = resetTestServer;

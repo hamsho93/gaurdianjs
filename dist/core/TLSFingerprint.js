@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.analyzeTLS = void 0;
+exports.analyzeTLS = analyzeTLS;
 async function analyzeTLS(req) {
     var _a, _b;
     try {
@@ -17,4 +17,3 @@ async function analyzeTLS(req) {
         };
     }
 }
-exports.analyzeTLS = analyzeTLS;

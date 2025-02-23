@@ -9,7 +9,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
-    "types": ["node", "jest", "express"],
+    "types": ["node", "jest"],
     "lib": ["es2018"]
   },
   "include": ["src/**/*"],

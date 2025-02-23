@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.analyzeBehavior = void 0;
+exports.analyzeBehavior = analyzeBehavior;
 async function analyzeBehavior(req) {
     // In a real implementation, this would analyze behavioral data
     // stored in a database or session
@@ -14,4 +14,3 @@ async function analyzeBehavior(req) {
         }
     };
 }
-exports.analyzeBehavior = analyzeBehavior;

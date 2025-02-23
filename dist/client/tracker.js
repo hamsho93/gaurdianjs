@@ -44,11 +44,3 @@ class GuardianTracker {
     }
 }
 exports.GuardianTracker = GuardianTracker;
-// Most basic possible class
-class Tracker {
-    constructor(endpoint) {
-        this.endpoint = endpoint;
-    }
-}
-// Export the class directly
-module.exports = GuardianTracker;

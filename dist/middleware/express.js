@@ -133,33 +133,15 @@ exports.app.use((_req, res) => {
 });
 // Add error handler
 exports.app.use(errorHandler);
-let serverInstance = null;
-let serverPromise = null;
-const openConnections = new Set();
-const cleanupServer = async (server) => {
-    return new Promise((resolve) => {
-        // Close all keep-alive connections
-        server.unref();
-        // Force close after timeout
-        const forceClose = setTimeout(() => {
-            resolve();
-        }, 1000);
-        server.close(() => {
-            clearTimeout(forceClose);
-            resolve();
-        });
-    });
-};
-const validatePort = (port) => {
-    return Number.isInteger(port) && port >= 0 && port < 65536;
-};
 const createMiddleware = () => {
     const app = (0, express_1.default)();
     return app;
 };
 exports.createMiddleware = createMiddleware;
-// Don't auto-start the server
-const startServer = (port = 3000) => {
+const startServer = async (port = 3000) => {
+    if (isNaN(port) || port < 0 || port > 65535) {
+        throw new Error('Invalid port number');
+    }
     const app = (0, exports.createMiddleware)();
     return new Promise((resolve, reject) => {
         const server = app.listen(port, () => {
@@ -168,47 +150,19 @@ const startServer = (port = 3000) => {
     });
 };
 exports.startServer = startServer;
-const closeServer = async () => {
-    if (!serverInstance) {
-        return true;
-    }
-    const server = serverInstance;
-    try {
-        await cleanupServer(server);
-        openConnections.delete(server);
-        serverInstance = null;
-        serverPromise = null;
-        return true;
-    }
-    catch (error) {
-        if (process.env.NODE_ENV !== 'test') {
-            console.error('Error closing server:', error);
+const closeServer = async (server) => {
+    return new Promise((resolve) => {
+        if (server.listening) {
+            server.close(() => resolve());
         }
-        serverInstance = null;
-        serverPromise = null;
-        return true;
-    }
+        else {
+            resolve();
+        }
+    });
 };
 exports.closeServer = closeServer;
-// Cleanup all servers on process exit
-const cleanup = async () => {
-    const servers = Array.from(openConnections);
-    await Promise.all(servers.map(cleanupServer));
-    openConnections.clear();
-    process.exit(0);
-};
-process.on('SIGTERM', cleanup);
-process.on('SIGINT', cleanup);
-// Cleanup on test environment
-if (process.env.NODE_ENV === 'test') {
-    afterAll(async () => {
-        const servers = Array.from(openConnections);
-        await Promise.all(servers.map(cleanupServer));
-        openConnections.clear();
-    });
-}
-// Export but don't execute
 exports.middleware = {
     create: exports.createMiddleware,
-    start: exports.startServer
+    start: exports.startServer,
+    close: exports.closeServer
 };

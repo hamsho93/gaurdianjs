@@ -1,19 +1,19 @@
-import { closeServer } from '../middleware/express';
+import { setupTestServer, teardownTestServer } from './serverUtils';
 
-beforeAll(() => {
-  process.env.NODE_ENV = 'test';
-});
-
-afterEach(async () => {
-  await closeServer();
-  // Allow event loop to clear
-  await new Promise(resolve => setTimeout(resolve, 100));
+beforeAll(async () => {
+  await setupTestServer();
 });
 
 afterAll(async () => {
-  await closeServer();
-  // Allow event loop to clear
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await teardownTestServer();
+});
+
+beforeEach(async () => {
+  await setupTestServer();
+});
+
+afterEach(async () => {
+  await teardownTestServer();
 });
 
 // Add error handler for unhandled rejections

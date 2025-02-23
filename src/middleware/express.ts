@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction, Application } from 'express';
 import path from 'path';
 import { GuardianJS } from '../core/GuardianJS';
-import { Server } from 'http';
+import { Server, IncomingMessage, ServerResponse } from 'http';
 
 export const app = express();
 export let guardian = new GuardianJS({ 
@@ -144,61 +144,18 @@ app.use((_req: Request, res: Response) => {
 // Add error handler
 app.use(errorHandler);
 
-let serverInstance: Server | null = null;
-let serverPromise: Promise<Server> | null = null;
-const openConnections = new Set<Server>();
-
-const cleanupServer = async (server: Server): Promise<void> => {
-  return new Promise((resolve) => {
-    // Close all keep-alive connections
-    server.unref();
-    
-    // Force close after timeout
-    const forceClose = setTimeout(() => {
-      resolve();
-    }, 1000);
-
-    server.close(() => {
-      clearTimeout(forceClose);
-      resolve();
-    });
-  });
-};
-
-const validatePort = (port: number): boolean => {
-  return Number.isInteger(port) && port >= 0 && port < 65536;
-};
-
-/**
- * Options for configuring the Guardian middleware
- * @interface MiddlewareOptions
- */
-export interface MiddlewareOptions {
-  /** Enable CORS support */
-  cors?: boolean;
-  /** Enable body parsing */
-  bodyParser?: boolean;
-  /** Enable response compression */
-  compression?: boolean;
-}
-
-/**
- * Creates an Express application with Guardian middleware
- * @param {MiddlewareOptions} [options] - Middleware configuration options
- * @returns {Application} Configured Express application
- */
-export const createMiddleware = (options: MiddlewareOptions = {}): Application => {
+export const createMiddleware = (): Application => {
   const app = express();
   return app;
 };
 
-/**
- * Starts the Guardian server
- * @param {number} [port=3000] - Port number to listen on
- * @returns {Promise<Server>} HTTP server instance
- */
-export const startServer = (port: number = 3000): Promise<Server> => {
+export const startServer = async (port: number = 3000): Promise<Server> => {
+  if (isNaN(port) || port < 0 || port > 65535) {
+    throw new Error('Invalid port number');
+  }
+
   const app = createMiddleware();
+  
   return new Promise((resolve, reject) => {
     const server = app.listen(port, () => {
       resolve(server);
@@ -206,55 +163,18 @@ export const startServer = (port: number = 3000): Promise<Server> => {
   });
 };
 
-export const closeServer = async (): Promise<boolean> => {
-  if (!serverInstance) {
-    return true;
-  }
-
-  const server = serverInstance;
-
-  try {
-    await cleanupServer(server);
-    openConnections.delete(server);
-    serverInstance = null;
-    serverPromise = null;
-    return true;
-  } catch (error) {
-    if (process.env.NODE_ENV !== 'test') {
-      console.error('Error closing server:', error);
+export const closeServer = async (server: Server): Promise<void> => {
+  return new Promise((resolve) => {
+    if (server.listening) {
+      server.close(() => resolve());
+    } else {
+      resolve();
     }
-    serverInstance = null;
-    serverPromise = null;
-    return true;
-  }
-};
-
-// Cleanup all servers on process exit
-const cleanup = async () => {
-  const servers = Array.from(openConnections);
-  await Promise.all(servers.map(cleanupServer));
-  openConnections.clear();
-  process.exit(0);
-};
-
-process.on('SIGTERM', cleanup);
-process.on('SIGINT', cleanup);
-
-// Cleanup on test environment
-if (process.env.NODE_ENV === 'test') {
-  afterAll(async () => {
-    const servers = Array.from(openConnections);
-    await Promise.all(servers.map(cleanupServer));
-    openConnections.clear();
   });
-}
+};
 
-/**
- * Guardian middleware utilities
- */
 export const middleware = {
-  /** Creates Express application with Guardian middleware */
   create: createMiddleware,
-  /** Starts Guardian server */
-  start: startServer
+  start: startServer,
+  close: closeServer
 }; 

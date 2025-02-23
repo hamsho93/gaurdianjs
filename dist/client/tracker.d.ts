@@ -47,11 +47,7 @@ export declare class GuardianTracker {
      * @param {TrackerConfig} config - Configuration options
      * @throws {Error} When endpoint is not provided
      */
-    constructor(config: {
-        endpoint: string;
-        bufferSize?: number;
-        flushInterval?: number;
-    });
+    constructor(config: TrackerConfig);
     /**
      * Gets the configured endpoint URL
      *
