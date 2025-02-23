@@ -32,13 +32,10 @@ describe('Behavior Analysis', () => {
         expect(result.patterns).toBeDefined();
     });
     test('should handle empty behavior data', async () => {
-        const mockReq = {
-            body: {}
-        };
-        const result = await (0, Behavior_1.analyzeBehavior)(mockReq);
+        const result = await (0, Behavior_1.analyzeBehavior)({});
         expect(result.isBot).toBe(false);
         expect(result.confidence).toBe(0.8);
-        expect(result.patterns).toEqual({
+        expect(result.patterns[0]).toEqual({
             mouseMovements: 0,
             scrollPatterns: 0,
             interactionSpeed: 0

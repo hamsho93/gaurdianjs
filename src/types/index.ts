@@ -1,14 +1,20 @@
 export * from '../index';
 
+/**
+ * Configuration options for GuardianJS
+ */
 export interface GuardianConfig {
+  /** Tracking endpoint URL */
   endpoint: string;
+  /** Enable/disable tracking */
   trackingEnabled?: boolean;
+  /** Bot detection threshold (0-1) */
+  threshold: number;
   detectionThreshold?: number;
   trackingInterval?: number;
   bufferSize?: number;
   useTLS?: boolean;
   useBehavior?: boolean;
-  threshold: number;
   enableBehaviorAnalysis?: boolean;
   customRules?: CustomRule[];
 }

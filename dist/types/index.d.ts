@@ -17,10 +17,15 @@ export interface TLSAnalysis {
     version?: string;
     isSuspicious: boolean;
 }
+export interface BehaviorPattern {
+    mouseMovements: number;
+    scrollPatterns: number;
+    interactionSpeed: number;
+}
 export interface BehaviorAnalysis {
     score: number;
-    patterns?: string[];
-    anomalies?: string[];
+    patterns: BehaviorPattern[];
+    anomalies: string[];
     isBot: boolean;
     confidence: number;
 }
