@@ -57,4 +57,3 @@ const validateCustomRule = (rule) => {
         throw new Error('Custom rule weight must be a number between 0 and 1');
     }
 };
-//# sourceMappingURL=validation.js.map

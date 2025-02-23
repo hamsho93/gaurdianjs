@@ -1,1 +1,0 @@
-{"version":3,"file":"Behavior.js","sourceRoot":"","sources":["../../src/core/Behavior.ts"],"names":[],"mappings":";;AAUA,0CAYC;AAZM,KAAK,UAAU,eAAe,CAAC,GAAQ;IAC5C,+DAA+D;IAC/D,kCAAkC;IAClC,OAAO;QACL,KAAK,EAAE,KAAK;QACZ,UAAU,EAAE,GAAG;QACf,QAAQ,EAAE;YACR,cAAc,EAAE,CAAC;YACjB,cAAc,EAAE,CAAC;YACjB,gBAAgB,EAAE,CAAC;SACpB;KACF,CAAC;AACJ,CAAC"}

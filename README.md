@@ -1,27 +1,81 @@
-# GuardianJS
+# Bot Guardian JS
 
-Advanced bot detection and security middleware for Node.js applications.
+A JavaScript/TypeScript library for bot detection and prevention.
 
 ## Installation
 
 ```bash
-npm install @guardianjs/core
+npm install bot-guardian-js
 ```
 
 ## Quick Start
 
 ```typescript
-import { GuardianJS } from '@guardianjs/core';
+import { GuardianTracker } from 'bot-guardian-js';
 
-// Initialize GuardianJS
-const guardian = new GuardianJS();
-
-// Use with Express
-app.use(guardian.middleware());
-
-// Or use standalone
-const result = await guardian.detect(request);
+const tracker = new GuardianTracker({
+  endpoint: 'https://api.example.com/tracking',
+  bufferSize: 5,
+  flushInterval: 1000
+});
 ```
+
+## Configuration
+
+The `GuardianTracker` accepts the following configuration options:
+
+| Option | Type | Required | Default | Description |
+|--------|------|----------|---------|-------------|
+| endpoint | string | Yes | - | The endpoint URL where tracking data will be sent |
+| bufferSize | number | No | 10 | Maximum number of events to buffer before sending |
+| flushInterval | number | No | 5000 | Interval in milliseconds to flush buffered events |
+
+## API Reference
+
+### GuardianTracker
+
+#### Constructor
+
+```typescript
+constructor(config: TrackerConfig)
+```
+
+Creates a new instance of GuardianTracker with the specified configuration.
+
+#### Methods
+
+##### getEndpoint()
+```typescript
+getEndpoint(): string
+```
+Returns the configured endpoint URL.
+
+## Development
+
+### Setup
+
+```bash
+# Install dependencies
+npm install
+
+# Run tests
+npm test
+
+# Build
+npm run build
+```
+
+### Testing
+
+The library uses Jest for testing. Run the test suite with:
+
+```bash
+npm test
+```
+
+## License
+
+[License Type] - see LICENSE file for details
 
 ## Features
 
@@ -88,7 +142,7 @@ For support, please:
 
 ## Security
 
-Please report security vulnerabilities to security@guardianjs.com
+Please report security vulnerabilities to mhamsho@berkeley.edu
 
 ## Acknowledgments
 

@@ -1,23 +1,15 @@
-import { GuardianJS } from '../dist';
+const { GuardianJS } = require('@guardianjs/core');
+const express = require('express');
 
-const guardian = new GuardianJS({
-  threshold: 0.7,
-  enableBehaviorAnalysis: true,
-  enableTLSFingerprinting: true
-});
-
-// Example usage with Express
-import express from 'express';
 const app = express();
+const guardian = new GuardianJS();
 
-// Add GuardianJS middleware
 app.use(guardian.middleware());
 
-// Example route
 app.get('/', (req, res) => {
-  res.send('Hello, protected by GuardianJS!');
+  res.send('Protected by GuardianJS');
 });
 
 app.listen(3000, () => {
-  console.log('Example app listening on port 3000');
+  console.log('Test app running on port 3000');
 }); 

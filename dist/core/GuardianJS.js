@@ -33,4 +33,3 @@ class GuardianJS {
     }
 }
 exports.GuardianJS = GuardianJS;
-//# sourceMappingURL=GuardianJS.js.map

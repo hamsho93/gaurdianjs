@@ -1,0 +1,119 @@
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>bot-guardian-js</title><meta name="description" content="Documentation for bot-guardian-js"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="assets/icons.svg#icon-search"></use></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div><div class="field"><div id="tsd-toolbar-links"></div></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">bot-guardian-js</a></div><div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><h2>bot-guardian-js</h2></div><div class="tsd-panel tsd-typography"><a id="md:bot-guardian-js" class="tsd-anchor"></a><h1><a href="#md:bot-guardian-js">Bot Guardian JS</a></h1><p>A JavaScript/TypeScript library for bot detection and prevention.</p>
+<a id="md:installation" class="tsd-anchor"></a><h2><a href="#md:installation">Installation</a></h2><pre><code class="language-bash"><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">install</span><span class="hl-1"> </span><span class="hl-2">bot-guardian-js</span>
+</code><button>Copy</button></pre>
+<a id="md:quick-start" class="tsd-anchor"></a><h2><a href="#md:quick-start">Quick Start</a></h2><pre><code class="language-typescript"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-4">GuardianTracker</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-2">&#39;bot-guardian-js&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">tracker</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">GuardianTracker</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-4">endpoint:</span><span class="hl-1"> </span><span class="hl-2">&#39;https://api.example.com/tracking&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-4">bufferSize:</span><span class="hl-1"> </span><span class="hl-7">5</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-4">flushInterval:</span><span class="hl-1"> </span><span class="hl-7">1000</span><br/><span class="hl-1">});</span>
+</code><button>Copy</button></pre>
+<a id="md:configuration" class="tsd-anchor"></a><h2><a href="#md:configuration">Configuration</a></h2><p>The <code>GuardianTracker</code> accepts the following configuration options:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>endpoint</td>
+<td>string</td>
+<td>Yes</td>
+<td>-</td>
+<td>The endpoint URL where tracking data will be sent</td>
+</tr>
+<tr>
+<td>bufferSize</td>
+<td>number</td>
+<td>No</td>
+<td>10</td>
+<td>Maximum number of events to buffer before sending</td>
+</tr>
+<tr>
+<td>flushInterval</td>
+<td>number</td>
+<td>No</td>
+<td>5000</td>
+<td>Interval in milliseconds to flush buffered events</td>
+</tr>
+</tbody></table>
+<a id="md:api-reference" class="tsd-anchor"></a><h2><a href="#md:api-reference">API Reference</a></h2><a id="md:guardiantracker" class="tsd-anchor"></a><h3><a href="#md:guardiantracker">GuardianTracker</a></h3><a id="md:constructor" class="tsd-anchor"></a><h4><a href="#md:constructor">Constructor</a></h4><pre><code class="language-typescript"><span class="hl-0">constructor</span><span class="hl-1">(</span><span class="hl-4">config</span><span class="hl-1">: </span><span class="hl-4">TrackerConfig</span><span class="hl-1">)</span>
+</code><button>Copy</button></pre>
+<p>Creates a new instance of GuardianTracker with the specified configuration.</p>
+<a id="md:methods" class="tsd-anchor"></a><h4><a href="#md:methods">Methods</a></h4><a id="md:getendpoint" class="tsd-anchor"></a><h5><a href="#md:getendpoint">getEndpoint()</a></h5><pre><code class="language-typescript"><span class="hl-0">getEndpoint</span><span class="hl-1">(): </span><span class="hl-4">string</span>
+</code><button>Copy</button></pre>
+<p>Returns the configured endpoint URL.</p>
+<a id="md:development" class="tsd-anchor"></a><h2><a href="#md:development">Development</a></h2><a id="md:setup" class="tsd-anchor"></a><h3><a href="#md:setup">Setup</a></h3><pre><code class="language-bash"><span class="hl-8"># Install dependencies</span><br/><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">install</span><br/><br/><span class="hl-8"># Run tests</span><br/><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">test</span><br/><br/><span class="hl-8"># Build</span><br/><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">run</span><span class="hl-1"> </span><span class="hl-2">build</span>
+</code><button>Copy</button></pre>
+<a id="md:testing" class="tsd-anchor"></a><h3><a href="#md:testing">Testing</a></h3><p>The library uses Jest for testing. Run the test suite with:</p>
+<pre><code class="language-bash"><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">test</span>
+</code><button>Copy</button></pre>
+<a id="md:license" class="tsd-anchor"></a><h2><a href="#md:license">License</a></h2><p>[License Type] - see LICENSE file for details</p>
+<a id="md:features" class="tsd-anchor"></a><h2><a href="#md:features">Features</a></h2><ul>
+<li>Advanced bot detection</li>
+<li>Behavior analysis</li>
+<li>TLS fingerprinting</li>
+<li>User agent analysis</li>
+<li>Express middleware support</li>
+<li>TypeScript support</li>
+<li>Customizable configuration</li>
+</ul>
+<a id="md:configuration-1" class="tsd-anchor"></a><h2><a href="#md:configuration-1">Configuration</a></h2><pre><code class="language-typescript"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-4">GuardianJS</span><span class="hl-1">, </span><span class="hl-4">GuardianConfig</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-2">&#39;@guardianjs/core&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">config</span><span class="hl-1">: </span><span class="hl-9">GuardianConfig</span><span class="hl-1"> = {</span><br/><span class="hl-1">  </span><span class="hl-4">threshold:</span><span class="hl-1"> </span><span class="hl-7">0.8</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-4">enableBehaviorAnalysis:</span><span class="hl-1"> </span><span class="hl-5">true</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-4">enableTLSFingerprinting:</span><span class="hl-1"> </span><span class="hl-5">true</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-8">// ... other options</span><br/><span class="hl-1">};</span><br/><br/><span class="hl-5">const</span><span class="hl-1"> </span><span class="hl-6">guardian</span><span class="hl-1"> = </span><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">GuardianJS</span><span class="hl-1">(</span><span class="hl-4">config</span><span class="hl-1">);</span>
+</code><button>Copy</button></pre>
+<a id="md:api-reference-1" class="tsd-anchor"></a><h2><a href="#md:api-reference-1">API Reference</a></h2><a id="md:guardianjs-class" class="tsd-anchor"></a><h3><a href="#md:guardianjs-class">GuardianJS Class</a></h3><a id="md:constructor-1" class="tsd-anchor"></a><h4><a href="#md:constructor-1">Constructor</a></h4><pre><code class="language-typescript"><span class="hl-5">new</span><span class="hl-1"> </span><span class="hl-0">GuardianJS</span><span class="hl-1">(</span><span class="hl-4">config</span><span class="hl-1">?: </span><span class="hl-4">GuardianConfig</span><span class="hl-1">)</span>
+</code><button>Copy</button></pre>
+<a id="md:methods-1" class="tsd-anchor"></a><h4><a href="#md:methods-1">Methods</a></h4><ul>
+<li><code>middleware()</code>: Express middleware function</li>
+<li><code>detect(request)</code>: Standalone detection function</li>
+<li><code>analyze(data)</code>: Analyze behavior data</li>
+</ul>
+<a id="md:configuration-options" class="tsd-anchor"></a><h3><a href="#md:configuration-options">Configuration Options</a></h3><table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>threshold</td>
+<td>number</td>
+<td>0.8</td>
+<td>Detection threshold</td>
+</tr>
+<tr>
+<td>enableBehaviorAnalysis</td>
+<td>boolean</td>
+<td>true</td>
+<td>Enable behavior analysis</td>
+</tr>
+<tr>
+<td>enableTLSFingerprinting</td>
+<td>boolean</td>
+<td>true</td>
+<td>Enable TLS fingerprinting</td>
+</tr>
+<tr>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+</tbody></table>
+<a id="md:contributing" class="tsd-anchor"></a><h2><a href="#md:contributing">Contributing</a></h2><p>Contributions are welcome! Please read our <a href="CONTRIBUTING.md">contributing guidelines</a>.</p>
+<a id="md:license-1" class="tsd-anchor"></a><h2><a href="#md:license-1">License</a></h2><p>MIT License - see <a href="LICENSE">LICENSE</a> for details.</p>
+<a id="md:support" class="tsd-anchor"></a><h2><a href="#md:support">Support</a></h2><p>For support, please:</p>
+<ul>
+<li>Open an issue</li>
+<li>Check existing documentation</li>
+<li>Review closed issues before opening new ones</li>
+</ul>
+<a id="md:security" class="tsd-anchor"></a><h2><a href="#md:security">Security</a></h2><p>Please report security vulnerabilities to <a href="mailto:mhamsho@berkeley.edu">mhamsho@berkeley.edu</a></p>
+<a id="md:acknowledgments" class="tsd-anchor"></a><h2><a href="#md:acknowledgments">Acknowledgments</a></h2><ul>
+<li>Thanks to all contributors</li>
+<li>Built with TypeScript</li>
+<li>Tested with Jest</li>
+</ul>
+<hr>
+<p>Made with ❤️ by the GuardianJS Team</p>
+</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-index-accordion"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><h4 class="uppercase">Member Visibility</h4><form><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-private" name="private"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Private</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></form></div><div class="tsd-theme-toggle"><h4 class="uppercase">Theme</h4><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-index-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#md:bot-guardian-js"><span>Bot <wbr/>Guardian JS</span></a><ul><li><a href="#md:installation"><span>Installation</span></a></li><li><a href="#md:quick-start"><span>Quick <wbr/>Start</span></a></li><li><a href="#md:configuration"><span>Configuration</span></a></li><li><a href="#md:api-reference"><span>API <wbr/>Reference</span></a></li><li><ul><li><a href="#md:guardiantracker"><span>Guardian<wbr/>Tracker</span></a></li><li><ul><li><a href="#md:constructor"><span>Constructor</span></a></li><li><a href="#md:methods"><span>Methods</span></a></li><li><ul><li><a href="#md:getendpoint"><span>get<wbr/>Endpoint()</span></a></li></ul></li></ul></li></ul></li><li><a href="#md:development"><span>Development</span></a></li><li><ul><li><a href="#md:setup"><span>Setup</span></a></li><li><a href="#md:testing"><span>Testing</span></a></li></ul></li><li><a href="#md:license"><span>License</span></a></li><li><a href="#md:features"><span>Features</span></a></li><li><a href="#md:configuration-1"><span>Configuration</span></a></li><li><a href="#md:api-reference-1"><span>API <wbr/>Reference</span></a></li><li><ul><li><a href="#md:guardianjs-class"><span>GuardianJS <wbr/>Class</span></a></li><li><ul><li><a href="#md:constructor-1"><span>Constructor</span></a></li><li><a href="#md:methods-1"><span>Methods</span></a></li></ul></li><li><a href="#md:configuration-options"><span>Configuration <wbr/>Options</span></a></li></ul></li><li><a href="#md:contributing"><span>Contributing</span></a></li><li><a href="#md:license-1"><span>License</span></a></li><li><a href="#md:support"><span>Support</span></a></li><li><a href="#md:security"><span>Security</span></a></li><li><a href="#md:acknowledgments"><span>Acknowledgments</span></a></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="assets/icons.svg#icon-1"></use></svg><span>bot-guardian-js</span></a><ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base="."><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>

@@ -10,4 +10,4 @@ export declare const mockScrollEvents: {
     scrollTop: number;
     timestamp: number;
 }[];
-export declare const makeRequest: (app: Express) => request.SuperTestStatic.Test;
+export declare const makeRequest: (app: Express) => request.Test;

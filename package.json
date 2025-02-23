@@ -1,7 +1,7 @@
 {
   "name": "bot-guardian-js",
   "version": "1.0.1",
-  "description": "Advanced bot detection and security middleware for Node.js applications",
+  "description": "Bot detection and prevention library for JavaScript/TypeScript applications",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -10,65 +10,71 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "start": "node dist/middleware/express.js",
-    "dev": "ts-node src/middleware/express.ts",
-    "test": "NODE_ENV=test jest --detectOpenHandles --forceExit --runInBand",
+    "build": "tsc",
+    "prepare": "npm run build",
+    "test": "jest",
+    "test:clear": "jest --clearCache && jest",
     "test:watch": "jest --watch",
-    "test:coverage": "NODE_ENV=test jest --coverage --detectOpenHandles --forceExit --runInBand",
+    "test:coverage": "jest --coverage",
+    "test:client": "jest src/client",
+    "test:server": "jest src/server",
+    "test:e2e": "jest --config jest.e2e.config.js",
     "test:coverage:view": "jest --coverage && open coverage/lcov-report/index.html",
     "test:ci": "jest --coverage --ci",
     "lint": "eslint src/**/*.ts",
     "prepublishOnly": "npm run test && npm run build",
-    "prepare": "npm run build",
     "version:patch": "npm version patch -m 'Release %s'",
     "version:minor": "npm version minor -m 'Release %s'",
     "version:major": "npm version major -m 'Release %s'",
-    "format": "prettier --write \"src/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\"",
+    "docs": "typedoc src/index.ts"
   },
   "keywords": [
+    "bot",
     "security",
-    "bot-detection",
-    "middleware",
-    "express",
-    "nodejs",
-    "typescript",
-    "anti-bot",
-    "protection"
+    "detection",
+    "prevention",
+    "tracking"
   ],
   "author": "Mahmoud Hamsho",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/guardianjs.git"
+    "url": "https://github.com/yourusername/bot-guardian-js"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/guardianjs/issues"
+    "url": "https://github.com/yourusername/bot-guardian-js/issues"
   },
-  "homepage": "https://github.com/yourusername/guardianjs#readme",
+  "homepage": "https://github.com/yourusername/bot-guardian-js#readme",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.0.0"
   },
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "mongoose": "^7.6.3",
+    "ua-parser-js": "^1.0.37"
   },
   "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.26.3",
+    "@babel/preset-env": "^7.22.20",
+    "@babel/preset-typescript": "^7.23.0",
     "@types/express": "^4.17.21",
-    "@types/jest": "^29.5.14",
-    "@types/node": "^18.15.11",
-    "@types/supertest": "^6.0.2",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.19",
+    "@types/supertest": "^2.0.16",
     "@types/ua-parser-js": "^0.7.39",
     "jest": "^29.7.0",
-    "rimraf": "^3.0.2",
-    "supertest": "^7.0.0",
-    "ts-jest": "^29.2.5",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.0.4",
-    "ua-parser-js": "^1.0.40"
+    "mongodb-memory-server": "^9.5.0",
+    "rimraf": "^5.0.5",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.1.2",
+    "typedoc": "^0.25.13",
+    "typescript": "^5.3.3"
   }
 }

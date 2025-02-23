@@ -16,4 +16,3 @@ function analyzeUA(userAgent) {
         device: result.device.type || 'desktop'
     };
 }
-//# sourceMappingURL=UserAgent.js.map

@@ -29,4 +29,3 @@ exports.defaultConfig = {
         ]
     }
 };
-//# sourceMappingURL=default.js.map
