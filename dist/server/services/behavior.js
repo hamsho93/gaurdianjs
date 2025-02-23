@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.analyzeBehavior = analyzeBehavior;
+exports.analyzeBehavior = void 0;
 function analyzeBehavior(events) {
     const analysis = {
         isBot: false,
@@ -34,6 +34,7 @@ function analyzeBehavior(events) {
     analysis.isBot = analysis.confidence >= 0.7;
     return analysis;
 }
+exports.analyzeBehavior = analyzeBehavior;
 function checkLinearMovement(events) {
     if (events.length < 3)
         return false;

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.analyzeUA = analyzeUA;
+exports.analyzeUA = void 0;
 const ua_parser_js_1 = __importDefault(require("ua-parser-js"));
 function analyzeUA(userAgent) {
     const parser = new ua_parser_js_1.default(userAgent);
@@ -16,3 +16,4 @@ function analyzeUA(userAgent) {
         device: result.device.type || 'desktop'
     };
 }
+exports.analyzeUA = analyzeUA;

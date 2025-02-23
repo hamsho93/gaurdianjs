@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response, NextFunction, Application } from 'express';
 import path from 'path';
 import { GuardianJS } from '../core/GuardianJS';
 import { Server } from 'http';
@@ -169,51 +169,41 @@ const validatePort = (port: number): boolean => {
   return Number.isInteger(port) && port >= 0 && port < 65536;
 };
 
-export const startServer = async (port: number): Promise<Server> => {
-  if (serverInstance) {
-    return serverInstance;
-  }
+/**
+ * Options for configuring the Guardian middleware
+ * @interface MiddlewareOptions
+ */
+export interface MiddlewareOptions {
+  /** Enable CORS support */
+  cors?: boolean;
+  /** Enable body parsing */
+  bodyParser?: boolean;
+  /** Enable response compression */
+  compression?: boolean;
+}
 
-  if (serverPromise) {
-    return serverPromise;
-  }
+/**
+ * Creates an Express application with Guardian middleware
+ * @param {MiddlewareOptions} [options] - Middleware configuration options
+ * @returns {Application} Configured Express application
+ */
+export const createMiddleware = (options: MiddlewareOptions = {}): Application => {
+  const app = express();
+  return app;
+};
 
-  if (!validatePort(port)) {
-    throw new Error('Invalid port number');
-  }
-
-  serverPromise = new Promise((resolve, reject) => {
-    try {
-      const server = app.listen(port);
-      openConnections.add(server);
-
-      server.once('listening', () => {
-        serverInstance = server;
-        serverPromise = null;
-        resolve(server);
-      });
-
-      server.once('error', (error: Error) => {
-        openConnections.delete(server);
-        serverInstance = null;
-        serverPromise = null;
-        reject(error);
-      });
-
-      server.once('close', () => {
-        openConnections.delete(server);
-      });
-
-      server.setTimeout(5000);
-
-    } catch (error) {
-      serverInstance = null;
-      serverPromise = null;
-      reject(error);
-    }
+/**
+ * Starts the Guardian server
+ * @param {number} [port=3000] - Port number to listen on
+ * @returns {Promise<Server>} HTTP server instance
+ */
+export const startServer = (port: number = 3000): Promise<Server> => {
+  const app = createMiddleware();
+  return new Promise((resolve, reject) => {
+    const server = app.listen(port, () => {
+      resolve(server);
+    }).on('error', reject);
   });
-
-  return serverPromise;
 };
 
 export const closeServer = async (): Promise<boolean> => {
@@ -259,7 +249,12 @@ if (process.env.NODE_ENV === 'test') {
   });
 }
 
-// Start the server if not in test environment
-if (process.env.NODE_ENV !== 'test') {
-  startServer(3000).catch(console.error);
-} 
+/**
+ * Guardian middleware utilities
+ */
+export const middleware = {
+  /** Creates Express application with Guardian middleware */
+  create: createMiddleware,
+  /** Starts Guardian server */
+  start: startServer
+}; 

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.closeServer = exports.startServer = exports.setGuardian = exports.guardian = exports.app = void 0;
+exports.middleware = exports.closeServer = exports.startServer = exports.createMiddleware = exports.setGuardian = exports.guardian = exports.app = void 0;
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const GuardianJS_1 = require("../core/GuardianJS");
@@ -153,43 +153,19 @@ const cleanupServer = async (server) => {
 const validatePort = (port) => {
     return Number.isInteger(port) && port >= 0 && port < 65536;
 };
-const startServer = async (port) => {
-    if (serverInstance) {
-        return serverInstance;
-    }
-    if (serverPromise) {
-        return serverPromise;
-    }
-    if (!validatePort(port)) {
-        throw new Error('Invalid port number');
-    }
-    serverPromise = new Promise((resolve, reject) => {
-        try {
-            const server = exports.app.listen(port);
-            openConnections.add(server);
-            server.once('listening', () => {
-                serverInstance = server;
-                serverPromise = null;
-                resolve(server);
-            });
-            server.once('error', (error) => {
-                openConnections.delete(server);
-                serverInstance = null;
-                serverPromise = null;
-                reject(error);
-            });
-            server.once('close', () => {
-                openConnections.delete(server);
-            });
-            server.setTimeout(5000);
-        }
-        catch (error) {
-            serverInstance = null;
-            serverPromise = null;
-            reject(error);
-        }
+const createMiddleware = () => {
+    const app = (0, express_1.default)();
+    return app;
+};
+exports.createMiddleware = createMiddleware;
+// Don't auto-start the server
+const startServer = (port = 3000) => {
+    const app = (0, exports.createMiddleware)();
+    return new Promise((resolve, reject) => {
+        const server = app.listen(port, () => {
+            resolve(server);
+        }).on('error', reject);
     });
-    return serverPromise;
 };
 exports.startServer = startServer;
 const closeServer = async () => {
@@ -231,7 +207,8 @@ if (process.env.NODE_ENV === 'test') {
         openConnections.clear();
     });
 }
-// Start the server if not in test environment
-if (process.env.NODE_ENV !== 'test') {
-    (0, exports.startServer)(3000).catch(console.error);
-}
+// Export but don't execute
+exports.middleware = {
+    create: exports.createMiddleware,
+    start: exports.startServer
+};

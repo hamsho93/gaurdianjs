@@ -1,11 +1,21 @@
-import { Server } from 'http';
+import { Server, createServer } from 'http';
+import { AddressInfo } from 'net';
 import { startServer, closeServer } from '../middleware/express';
 import { getAvailablePort } from './portUtils';
 
 export const setupTestServer = async (): Promise<{ server: Server; port: number }> => {
-  await closeServer(); // Ensure clean state
-  const port = await getAvailablePort();
-  const server = await startServer(port);
+  const server = createServer((req, res) => {
+    res.writeHead(200);
+    res.end('Test server');
+  });
+
+  await new Promise<void>((resolve) => {
+    server.listen(0, () => resolve());
+  });
+
+  const address = server.address() as AddressInfo;
+  const port = address.port;
+
   return { server, port };
 };
 

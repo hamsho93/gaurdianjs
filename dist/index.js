@@ -14,7 +14,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateConfig = exports.defaultConfig = exports.closeServer = exports.startServer = exports.GuardianJS = void 0;
+exports.GuardianTracker = exports.validateConfig = exports.defaultConfig = exports.closeServer = exports.startServer = exports.GuardianJS = void 0;
 var GuardianJS_1 = require("./core/GuardianJS");
 Object.defineProperty(exports, "GuardianJS", { enumerable: true, get: function () { return GuardianJS_1.GuardianJS; } });
 var express_1 = require("./middleware/express");
@@ -29,3 +29,23 @@ Object.defineProperty(exports, "validateConfig", { enumerable: true, get: functi
 __exportStar(require("./core/UserAgent"), exports);
 __exportStar(require("./core/TLSFingerprint"), exports);
 __exportStar(require("./core/Behavior"), exports);
+class GuardianTracker {
+    constructor(config) {
+        if (!config.endpoint) {
+            throw new Error('Endpoint is required');
+        }
+        this.endpoint = config.endpoint;
+        this.bufferSize = config.bufferSize || 10;
+        this.flushInterval = config.flushInterval || 5000;
+        // Prevent server from starting automatically
+        if (config.startServer) {
+            console.warn('Server auto-start is disabled. Use startServer() explicitly if needed.');
+        }
+    }
+    getEndpoint() {
+        return this.endpoint;
+    }
+}
+exports.GuardianTracker = GuardianTracker;
+// Only export the tracker class
+module.exports = GuardianTracker;

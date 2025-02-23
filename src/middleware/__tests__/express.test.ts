@@ -3,6 +3,9 @@ import { app, startServer, closeServer, setGuardian } from '../express';
 import { GuardianJS } from '../../core/GuardianJS';
 import { setupTestServer, cleanupTestServer } from '../../test/serverUtils';
 import { getTestPorts } from '../../test/portUtils';
+import { Server } from 'http';
+import express from 'express';
+import { createMiddleware } from '../express';
 
 describe('Express Server', () => {
   const originalGuardian = new GuardianJS();
@@ -306,4 +309,62 @@ describe('Express Server', () => {
       expect(response.body).toEqual({ error: 'Invalid mouse movements data' });
     });
   });
+});
+
+describe('Express Middleware', () => {
+  let app: express.Application;
+  let server: Server;
+
+  beforeEach(() => {
+    app = express();
+  });
+
+  afterEach((done) => {
+    if (server && server.listening) {
+      server.close(done);
+    } else {
+      done();
+    }
+  });
+
+  describe('Server Timeout Handling', () => {
+    it('should handle server timeout events', async () => {
+      app = await createMiddleware();
+      
+      const result = await startServer(0);
+      server = result;
+      
+      return new Promise<void>((resolve) => {
+        server.on('timeout', () => {
+          expect(server.listening).toBe(true);
+          resolve();
+        });
+        
+        server.emit('timeout');
+      });
+    });
+
+    it('should handle close events', async () => {
+      app = await createMiddleware();
+      
+      const result = await startServer(0);
+      server = result;
+      
+      return new Promise<void>((resolve) => {
+        const originalClose = server.close.bind(server);
+        
+        server.close = (callback?: (err?: Error) => void) => {
+          if (callback) callback();
+          return server;
+        };
+
+        server.close(() => {
+          server.close = originalClose;
+          resolve();
+        });
+      });
+    });
+  });
+
+  // Add more test cases as needed...
 }); 

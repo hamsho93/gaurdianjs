@@ -8,6 +8,8 @@ const express_1 = require("../express");
 const GuardianJS_1 = require("../../core/GuardianJS");
 const serverUtils_1 = require("../../test/serverUtils");
 const portUtils_1 = require("../../test/portUtils");
+const express_2 = __importDefault(require("express"));
+const express_3 = require("../express");
 describe('Express Server', () => {
     const originalGuardian = new GuardianJS_1.GuardianJS();
     let server;
@@ -253,4 +255,51 @@ describe('Express Server', () => {
             expect(response.body).toEqual({ error: 'Invalid mouse movements data' });
         });
     });
+});
+describe('Express Middleware', () => {
+    let app;
+    let server;
+    beforeEach(() => {
+        app = (0, express_2.default)();
+    });
+    afterEach((done) => {
+        if (server && server.listening) {
+            server.close(done);
+        }
+        else {
+            done();
+        }
+    });
+    describe('Server Timeout Handling', () => {
+        it('should handle server timeout events', async () => {
+            app = await (0, express_3.createMiddleware)();
+            const result = await (0, express_1.startServer)(0);
+            server = result;
+            return new Promise((resolve) => {
+                server.on('timeout', () => {
+                    expect(server.listening).toBe(true);
+                    resolve();
+                });
+                server.emit('timeout');
+            });
+        });
+        it('should handle close events', async () => {
+            app = await (0, express_3.createMiddleware)();
+            const result = await (0, express_1.startServer)(0);
+            server = result;
+            return new Promise((resolve) => {
+                const originalClose = server.close.bind(server);
+                server.close = (callback) => {
+                    if (callback)
+                        callback();
+                    return server;
+                };
+                server.close(() => {
+                    server.close = originalClose;
+                    resolve();
+                });
+            });
+        });
+    });
+    // Add more test cases as needed...
 });

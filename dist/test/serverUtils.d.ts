@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { Server } from 'http';
 export declare const setupTestServer: () => Promise<{
     server: Server;
