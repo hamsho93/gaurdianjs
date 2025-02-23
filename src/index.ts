@@ -21,6 +21,13 @@ export * from './core/UserAgent';
 export * from './core/TLSFingerprint';
 export * from './core/Behavior';
 
+// Export the class and its types
+export { GuardianJS };
+export default GuardianJS;
+
+// Export types
+export * from './types';
+
 // For CommonJS compatibility
 module.exports = GuardianTracker;
 module.exports.default = GuardianTracker;
