@@ -1,5 +1,5 @@
 {
-  "name": "guardianjs",
+  "name": "bot-guardian-js",
   "version": "1.0.4",
   "description": "Bot detection and prevention library for Node.js",
   "main": "dist/index.js",
