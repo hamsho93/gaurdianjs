@@ -1,6 +1,6 @@
 # GuardianJS
 
-A powerful bot detection and prevention library for Node.js and web applications with real-time monitoring dashboard.
+Bot detection and prevention library for Node.js and web applications with real-time monitoring dashboard.
 
 ## Features
 
