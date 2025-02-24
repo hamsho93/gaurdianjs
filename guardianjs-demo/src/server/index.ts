@@ -1,5 +1,5 @@
 import express from 'express';
-import { GuardianJS } from 'guardianjs';
+import { GuardianJS } from 'bot-guardian-js';
 import path from 'path';
 
 interface BotDetectionParams {
@@ -123,8 +123,8 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`GuardianJS Demo server running on port ${PORT}`);
 });
 
-export default app;
+export { app, server };

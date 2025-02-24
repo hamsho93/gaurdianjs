@@ -1,17 +1,18 @@
 {
   "name": "guardianjs-demo",
+  "private": true,
   "version": "1.0.0",
   "description": "Demo application for GuardianJS",
   "main": "src/server/index.ts",
   "scripts": {
     "start": "ts-node src/server/index.ts",
     "dev": "nodemon src/server/index.ts",
-    "test": "jest",
+    "test": "jest --config jest.config.js",
     "build": "tsc"
   },
   "dependencies": {
-    "express": "^4.17.1",
-    "guardianjs": "file:.."
+    "bot-guardian-js": "^1.0.5",
+    "express": "^4.17.1"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
@@ -25,4 +26,4 @@
     "ts-node": "^10.2.1",
     "typescript": "^4.3.5"
   }
-} 
+}
