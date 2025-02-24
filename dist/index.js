@@ -27,8 +27,9 @@ const validation_1 = require("./utils/validation");
 Object.defineProperty(exports, "validateConfig", { enumerable: true, get: function () { return validation_1.validateConfig; } });
 // Default export
 exports.default = GuardianJS_1.GuardianJS;
+// Export types
 __exportStar(require("./types"), exports);
-__exportStar(require("./core/GuardianJS"), exports);
+// Export middleware
 __exportStar(require("./middleware/express"), exports);
 __exportStar(require("./middleware/guardian"), exports);
 // Export classes and functions

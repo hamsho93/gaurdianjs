@@ -19,10 +19,11 @@ router.get('/stats', async (req, res) => {
   try {
     const detections = await guardianStorage.getDetections();
     
-    const pathStats: Record<string, number> = detections.reduce((acc, curr) => {
-      acc[curr.path] = (acc[curr.path] || 0) + 1;
+    const pathStats = detections.reduce((acc: Record<string, number>, curr: DetectionResult) => {
+      const path = curr.path || 'unknown';
+      acc[path] = (acc[path] || 0) + 1;
       return acc;
-    }, {} as Record<string, number>);
+    }, {});
 
     res.json({
       total: detections.length,
@@ -31,6 +32,23 @@ router.get('/stats', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch stats' });
+  }
+});
+
+router.get('/data', async (req, res) => {
+  try {
+    const detections = guardianStorage.getDetections();
+    const stats = guardianStorage.getStats();
+    
+    res.json({
+      totalRequests: stats.totalRequests,
+      detectedBots: stats.detectedBots,
+      pathStats: stats.pathStats,
+      recentDetections: detections.slice(0, 10)
+    });
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error);
+    res.status(500).json({ error: 'Failed to fetch dashboard data' });
   }
 });
 

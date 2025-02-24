@@ -8,7 +8,7 @@ import type {
   TLSAnalysis,
   BehaviorAnalysis,
   CustomRule,
-  DetectionResult,
+  DetectionResult as TypesDetectionResult,
   BotDetectionResponse
 } from './types';
 
@@ -31,15 +31,17 @@ export type {
   TLSAnalysis,
   BehaviorAnalysis,
   CustomRule,
-  DetectionResult,
+  TypesDetectionResult as DetectionResult,
   BotDetectionResponse
 };
 
 // Default export
 export default GuardianJS;
 
+// Export types
 export * from './types';
-export * from './core/GuardianJS';
+
+// Export middleware
 export * from './middleware/express';
 export * from './middleware/guardian';
 

@@ -6,27 +6,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Visit = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const visitSchema = new mongoose_1.default.Schema({
-    timestamp: { type: Date, required: true },
     isBot: { type: Boolean, required: true },
-    confidence: { type: Number, required: true },
-    path: { type: String, required: true },
-    userAgent: { type: String, required: true },
-    ip: { type: String, required: true },
+    score: { type: Number, required: true },
     reasons: [String],
+    confidence: { type: Number, required: true },
     behavior: {
-        mouseMovements: Number,
-        keystrokes: Number,
-        timeOnPage: Number,
-        scrolling: Boolean,
-        score: Number,
-        patterns: [{
-                mouseMovements: Number,
-                scrollPatterns: Number,
-                interactionSpeed: Number
-            }],
-        anomalies: [mongoose_1.default.Schema.Types.Mixed],
-        isBot: Boolean,
-        confidence: Number
-    }
+        mouseMovements: { type: Number, default: 0 },
+        keystrokes: { type: Number, default: 0 },
+        timeOnPage: { type: Number, default: 0 },
+        scrolling: { type: Boolean, default: false }
+    },
+    sessionId: { type: String, required: true },
+    clientId: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now }
 });
 exports.Visit = mongoose_1.default.model('Visit', visitSchema);

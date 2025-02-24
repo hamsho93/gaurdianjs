@@ -1,13 +1,17 @@
 import { Request } from 'express';
-import { UAAnalysis } from './UserAgent';
-import { GuardianConfig, TrackingEvent, TLSAnalysis, BehaviorAnalysis, BotDetectionResponse } from '../types';
+import { GuardianConfig, TrackingEvent, BehaviorAnalysis, BotDetectionParams } from '../types';
 export interface DetectionResult {
-    verdict: boolean;
-    userAgent: UAAnalysis;
-    tls: TLSAnalysis | null;
-    behavior: BehaviorAnalysis | null;
+    isBot: boolean;
+    score: number;
+    confidence: number;
+    reasons: string[];
+    behavior: BehaviorAnalysis;
+    timestamp: Date;
+    path: string;
+    userAgent: string;
+    ip: string;
 }
-interface DetectionParams {
+export interface DetectionParams {
     userAgent: string;
     ip: string;
     req?: any;
@@ -15,13 +19,10 @@ interface DetectionParams {
 export declare class GuardianJS {
     private config;
     private events;
-    private behaviorAnalyzer;
-    constructor(config?: GuardianConfig);
+    constructor(config?: Partial<GuardianConfig>);
     track(event: TrackingEvent): void;
     private flush;
-    isBot(params: DetectionParams): Promise<BotDetectionResponse>;
-    private analyzeBehavior;
+    isBot(params: BotDetectionParams): Promise<DetectionResult>;
     middleware(): (req: any, res: any, next: any) => Promise<any>;
     detect(req: Request): Promise<DetectionResult>;
 }
-export {};

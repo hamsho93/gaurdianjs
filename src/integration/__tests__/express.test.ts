@@ -16,7 +16,7 @@ describe('Express Middleware Integration', () => {
     });
 
     app.get('/test', (req: Request, res: Response) => {
-      if (req.botDetection?.verdict) {
+      if (req.botDetection?.isBot) {
         res.status(403).json({ error: 'Bot detected' });
       } else {
         res.status(200).json({ status: 'ok' });

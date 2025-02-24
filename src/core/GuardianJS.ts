@@ -2,46 +2,89 @@ import { Request, Response, NextFunction } from 'express';
 import { analyzeUA, UAAnalysis } from './UserAgent';
 import { analyzeTLS } from './TLSFingerprint';
 import { analyzeBehavior } from './Behavior';
-import { defaultConfig } from '../config/default';
-import { GuardianConfig, TrackingEvent, TLSAnalysis, BehaviorAnalysis, BotDetectionResponse } from '../types';
+import { defaultConfig as configDefaults } from '../config/default';
+import { GuardianConfig, TrackingEvent, TLSAnalysis, BehaviorAnalysis, BotDetectionResponse, 
+         DetectionParams as DetectionParamsType, 
+         DetectionResult as DetectionResultType, 
+         CustomRule, BotDetectionParams } from '../types';
 import fetch from 'cross-fetch';
-import { BehaviorAnalyzer } from './Behavior';
 
+// Export the DetectionResult interface so it can be imported by other files
 export interface DetectionResult {
-  verdict: boolean;
-  userAgent: UAAnalysis;
-  tls: TLSAnalysis | null;
-  behavior: BehaviorAnalysis | null;
+  isBot: boolean;
+  score: number;
+  confidence: number;
+  reasons: string[];
+  behavior: BehaviorAnalysis;
+  timestamp: Date;
+  path: string;
+  userAgent: string;
+  ip: string;
 }
 
-interface DetectionParams {
+// Export this interface as well if needed by other files
+export interface DetectionParams {
   userAgent: string;
   ip: string;
   req?: any;
 }
 
+const defaultConfig: GuardianConfig = {
+  threshold: 0.5,
+  useBehavior: true,
+  customRules: []
+};
+
 export class GuardianJS {
   private config: GuardianConfig;
   private events: TrackingEvent[] = [];
-  private behaviorAnalyzer: BehaviorAnalyzer;
 
-  constructor(config: GuardianConfig = {}) {
+  constructor(config: Partial<GuardianConfig> = {}) {
     this.config = {
-      endpoint: config.endpoint || 'http://localhost:3000/api/detect',
-      trackingEnabled: config.trackingEnabled ?? true,
-      threshold: config.threshold || 0.8,
-      detectionThreshold: config.detectionThreshold || 0.5,
-      trackingInterval: config.trackingInterval || 1000,
-      bufferSize: config.bufferSize || 1000,
-      useTLS: config.useTLS ?? true,
-      maxRetries: config.maxRetries || 3,
-      timeout: config.timeout || 5000,
-      cacheSize: config.cacheSize || 100,
-      useBehavior: config.useBehavior ?? true,
-      enableBehaviorAnalysis: config.enableBehaviorAnalysis ?? true,
-      customRules: config.customRules || []
+      ...defaultConfig,
+      ...config,
+      customRules: [
+        {
+          name: 'Known Bot Detection',
+          test: (params: BotDetectionParams) => {
+            const knownBots = [
+              'googlebot',
+              'bingbot',
+              'yandexbot',
+              'duckduckbot',
+              'baiduspider',
+              'facebookexternalhit'
+            ];
+            const ua = params.userAgent.toLowerCase();
+            return knownBots.some(bot => ua.includes(bot));
+          },
+          score: 1.0
+        },
+        // Add LLM bot detection with more patterns
+        {
+          name: 'LLM Bot Detection',
+          test: (params: BotDetectionParams) => {
+            const llmBots = [
+              'gptbot',
+              'claude-web',
+              'anthropic',
+              'cohere',
+              'llama',
+              'bard',
+              'openai'
+            ];
+            const ua = params.userAgent.toLowerCase();
+            // More thorough check for GPTBot which might be in different formats
+            if (ua.includes('gpt') || ua.includes('openai')) {
+              return true;
+            }
+            return llmBots.some(bot => ua.includes(bot));
+          },
+          score: 1.0
+        },
+        ...(config.customRules || [])
+      ]
     };
-    this.behaviorAnalyzer = new BehaviorAnalyzer();
     
     // Log configuration for debugging
     console.log('GuardianJS initialized with config:', this.config);
@@ -62,7 +105,7 @@ export class GuardianJS {
     if (this.events.length === 0) return;
 
     try {
-      const response = await fetch(this.config.endpoint || defaultConfig.endpoint, {
+      const response = await fetch(this.config.endpoint || configDefaults.endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,50 +121,51 @@ export class GuardianJS {
     }
   }
 
-  async isBot(params: DetectionParams): Promise<BotDetectionResponse> {
-    console.log('Checking bot detection for:', params);
-    
+  async isBot(params: BotDetectionParams): Promise<DetectionResult> {
     let score = 0;
     const reasons: string[] = [];
 
-    // Apply custom rules
-    if (this.config.customRules && this.config.customRules.length > 0) {
-      console.log('Applying custom rules...');
-      
-      for (const rule of this.config.customRules) {
-        try {
-          console.log(`Testing rule: ${rule.name}`);
-          const ruleResult = await Promise.resolve(rule.test(params));
-          
-          if (ruleResult) {
-            score += rule.score;
-            reasons.push(rule.name);
-            console.log(`Rule ${rule.name} matched! Score: ${score}`);
-          }
-        } catch (error) {
-          console.error(`Error in rule ${rule.name}:`, error);
-        }
+    // Check for LLM bots first
+    const llmBotPatterns = ['gptbot', 'claude', 'anthropic', 'cohere', 'llama', 'bard', 'openai'];
+    const ua = params.userAgent.toLowerCase();
+    const isLLMBot = llmBotPatterns.some(pattern => ua.includes(pattern)) || ua.includes('gpt');
+    
+    if (isLLMBot) {
+      return {
+        isBot: true,
+        score: 1.0,
+        confidence: 1.0,
+        reasons: ['LLM Bot Pattern'],
+        behavior: analyzeBehavior(),
+        timestamp: new Date(),
+        path: params.req?.path || '',
+        userAgent: params.userAgent,
+        ip: params.ip
+      };
+    }
+
+    // Then check custom rules
+    for (const rule of this.config.customRules) {
+      if (rule.test(params)) {
+        score += rule.score;
+        reasons.push(rule.name);
       }
     }
 
-    const isBot = score >= (this.config.threshold || 0.8);
-    console.log('Final detection result:', { isBot, score, reasons });
+    // Use analyzeBehavior from Behavior.ts
+    const behavior = analyzeBehavior();
 
     return {
-      isBot,
+      isBot: score >= this.config.threshold,
+      score,
       confidence: score,
       reasons,
-      behavior: {
-        mouseMovements: 0,
-        keystrokes: 0,
-        timeOnPage: 0,
-        scrolling: false
-      }
+      behavior,
+      timestamp: new Date(),
+      path: params.req?.path || '',
+      userAgent: params.userAgent,
+      ip: params.ip
     };
-  }
-
-  private async analyzeBehavior(req: any): Promise<BehaviorAnalysis> {
-    return this.behaviorAnalyzer.analyze(req);
   }
 
   middleware() {
@@ -139,21 +183,64 @@ export class GuardianJS {
   }
 
   async detect(req: Request): Promise<DetectionResult> {
+    const userAgent = req.headers['user-agent'] || '';
+    const ip = req.ip || '';
+    
+    // Check for LLM bots first - this is the most direct approach
+    const llmBotPatterns = ['gptbot', 'claude', 'anthropic', 'cohere', 'llama', 'bard', 'openai'];
+    const ua = userAgent.toLowerCase();
+    const isLLMBot = llmBotPatterns.some(pattern => ua.includes(pattern)) || ua.includes('gpt');
+
+    if (isLLMBot) {
+      return {
+        isBot: true,
+        score: 1.0,
+        confidence: 1.0,
+        reasons: ['LLM Bot Pattern'],
+        behavior: this.config.useBehavior ? analyzeBehavior() : {
+          mouseMovements: 0,
+          keystrokes: 0,
+          timeOnPage: 0,
+          scrolling: false
+        },
+        timestamp: new Date(),
+        path: req.path || '',
+        userAgent,
+        ip
+      };
+    }
+    
+    // Then check against our custom rules
+    const botCheck = await this.isBot({ userAgent, ip, req });
+    if (botCheck.isBot) {
+      return botCheck;
+    }
+    
+    // If not caught by custom rules, do deeper analysis
     const results = {
-      userAgent: analyzeUA(req.headers['user-agent'] || ''),
+      userAgent: analyzeUA(userAgent),
       tls: this.config.useTLS ? await analyzeTLS(req) : null,
-      behavior: this.config.useBehavior ? await analyzeBehavior(req) : null
+      behavior: this.config.useBehavior ? analyzeBehavior() : null
     };
 
     return {
-      verdict: Boolean(
+      isBot: Boolean(
         results.userAgent.isBot || 
-        results.tls?.isSuspicious || 
-        results.behavior?.isBot
+        results.tls?.isSuspicious
       ),
-      userAgent: results.userAgent,
-      tls: results.tls,
-      behavior: results.behavior
+      score: results.userAgent.isBot ? 1.0 : 0,
+      confidence: results.userAgent.isBot ? 1.0 : 0,
+      reasons: results.userAgent.isBot ? ['User Agent Analysis'] : [],
+      behavior: results.behavior || {
+        mouseMovements: 0,
+        keystrokes: 0,
+        timeOnPage: 0,
+        scrolling: false
+      },
+      timestamp: new Date(),
+      path: req.path || '',
+      userAgent,
+      ip
     };
   }
 }

@@ -13,4 +13,4 @@ export declare const middleware: {
     start: (port?: number) => Promise<Server>;
     close: (server: Server) => Promise<void>;
 };
-export declare function createGuardianMiddleware(config?: GuardianConfig): GuardianJS;
+export declare function createGuardianMiddleware(config?: Partial<GuardianConfig>): (req: any, res: any, next: any) => Promise<void>;

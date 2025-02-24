@@ -8,7 +8,7 @@ export interface GuardianConfig {
     /** Enable/disable tracking */
     trackingEnabled?: boolean;
     /** Bot detection threshold (0-1) */
-    threshold?: number;
+    threshold: number;
     detectionThreshold?: number;
     trackingInterval?: number;
     bufferSize?: number;
@@ -16,9 +16,9 @@ export interface GuardianConfig {
     maxRetries?: number;
     timeout?: number;
     cacheSize?: number;
-    useBehavior?: boolean;
+    useBehavior: boolean;
     enableBehaviorAnalysis?: boolean;
-    customRules?: Array<any>;
+    customRules: CustomRule[];
 }
 export interface TLSAnalysis {
     score: number;
@@ -36,20 +36,11 @@ export interface BehaviorAnalysis {
     keystrokes: number;
     timeOnPage: number;
     scrolling: boolean;
-    score?: number;
-    patterns?: Array<{
-        mouseMovements: number | null;
-        scrollPatterns: number | null;
-        interactionSpeed: number | null;
-    }>;
-    anomalies?: any[];
-    isBot?: boolean;
-    confidence?: number;
 }
 export interface CustomRule {
     name: string;
-    test: (req: any) => boolean | Promise<boolean>;
-    weight?: number;
+    test: (params: BotDetectionParams) => boolean;
+    score: number;
 }
 export interface TrackingEvent {
     event: string;
@@ -57,15 +48,21 @@ export interface TrackingEvent {
     timestamp?: number;
     [key: string]: any;
 }
+export interface DetectionParams {
+    userAgent: string;
+    ip: string;
+    req?: any;
+}
 export interface DetectionResult {
-    timestamp: Date;
     isBot: boolean;
+    score: number;
     confidence: number;
+    reasons: string[];
+    behavior: BehaviorAnalysis;
+    timestamp: Date;
     path: string;
     userAgent: string;
     ip: string;
-    reasons?: string[];
-    behavior?: BehaviorAnalysis;
 }
 export interface DetectionStats {
     total: number;
@@ -78,6 +75,11 @@ export interface BotDetectionResponse {
     confidence: number;
     reasons?: string[];
     behavior?: BehaviorAnalysis;
+}
+export interface BotDetectionParams {
+    userAgent: string;
+    ip: string;
+    req?: any;
 }
 declare global {
     namespace Express {

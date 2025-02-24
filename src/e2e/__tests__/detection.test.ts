@@ -11,7 +11,9 @@ describe('End-to-End Bot Detection', () => {
     app = express();
     const config: GuardianConfig = {
       useTLS: true,
-      useBehavior: true
+      useBehavior: true,
+      threshold: 0.5,
+      customRules: []
     };
     guardian = new GuardianJS(config);
 

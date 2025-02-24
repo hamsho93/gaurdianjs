@@ -70,7 +70,7 @@ export const GuardianDashboard: React.FC = () => {
         <tbody>
           {detections.map((detection: DetectionResult) => (
             <tr key={`${detection.timestamp}-${detection.ip}`}>
-              <td>{new Date(detection.timestamp).toLocaleString()}</td>
+              <td>{detection.timestamp?.toLocaleString() || 'N/A'}</td>
               <td>{detection.isBot ? '🤖 Bot' : '👤 Human'}</td>
               <td>{detection.path}</td>
               <td>{(detection.confidence * 100).toFixed(1)}%</td>

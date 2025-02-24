@@ -18,27 +18,55 @@ const TLSFingerprint_1 = require("./TLSFingerprint");
 const Behavior_1 = require("./Behavior");
 const default_1 = require("../config/default");
 const cross_fetch_1 = __importDefault(require("cross-fetch"));
-const Behavior_2 = require("./Behavior");
+const defaultConfig = {
+    threshold: 0.5,
+    useBehavior: true,
+    customRules: []
+};
 class GuardianJS {
     constructor(config = {}) {
-        var _a, _b, _c, _d;
         this.events = [];
-        this.config = {
-            endpoint: config.endpoint || 'http://localhost:3000/api/detect',
-            trackingEnabled: (_a = config.trackingEnabled) !== null && _a !== void 0 ? _a : true,
-            threshold: config.threshold || 0.8,
-            detectionThreshold: config.detectionThreshold || 0.5,
-            trackingInterval: config.trackingInterval || 1000,
-            bufferSize: config.bufferSize || 1000,
-            useTLS: (_b = config.useTLS) !== null && _b !== void 0 ? _b : true,
-            maxRetries: config.maxRetries || 3,
-            timeout: config.timeout || 5000,
-            cacheSize: config.cacheSize || 100,
-            useBehavior: (_c = config.useBehavior) !== null && _c !== void 0 ? _c : true,
-            enableBehaviorAnalysis: (_d = config.enableBehaviorAnalysis) !== null && _d !== void 0 ? _d : true,
-            customRules: config.customRules || []
-        };
-        this.behaviorAnalyzer = new Behavior_2.BehaviorAnalyzer();
+        this.config = Object.assign(Object.assign(Object.assign({}, defaultConfig), config), { customRules: [
+                {
+                    name: 'Known Bot Detection',
+                    test: (params) => {
+                        const knownBots = [
+                            'googlebot',
+                            'bingbot',
+                            'yandexbot',
+                            'duckduckbot',
+                            'baiduspider',
+                            'facebookexternalhit'
+                        ];
+                        const ua = params.userAgent.toLowerCase();
+                        return knownBots.some(bot => ua.includes(bot));
+                    },
+                    score: 1.0
+                },
+                // Add LLM bot detection with more patterns
+                {
+                    name: 'LLM Bot Detection',
+                    test: (params) => {
+                        const llmBots = [
+                            'gptbot',
+                            'claude-web',
+                            'anthropic',
+                            'cohere',
+                            'llama',
+                            'bard',
+                            'openai'
+                        ];
+                        const ua = params.userAgent.toLowerCase();
+                        // More thorough check for GPTBot which might be in different formats
+                        if (ua.includes('gpt') || ua.includes('openai')) {
+                            return true;
+                        }
+                        return llmBots.some(bot => ua.includes(bot));
+                    },
+                    score: 1.0
+                },
+                ...(config.customRules || [])
+            ] });
         // Log configuration for debugging
         console.log('GuardianJS initialized with config:', this.config);
     }
@@ -70,46 +98,47 @@ class GuardianJS {
         });
     }
     isBot(params) {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('Checking bot detection for:', params);
             let score = 0;
             const reasons = [];
-            // Apply custom rules
-            if (this.config.customRules && this.config.customRules.length > 0) {
-                console.log('Applying custom rules...');
-                for (const rule of this.config.customRules) {
-                    try {
-                        console.log(`Testing rule: ${rule.name}`);
-                        const ruleResult = yield Promise.resolve(rule.test(params));
-                        if (ruleResult) {
-                            score += rule.score;
-                            reasons.push(rule.name);
-                            console.log(`Rule ${rule.name} matched! Score: ${score}`);
-                        }
-                    }
-                    catch (error) {
-                        console.error(`Error in rule ${rule.name}:`, error);
-                    }
+            // Check for LLM bots first
+            const llmBotPatterns = ['gptbot', 'claude', 'anthropic', 'cohere', 'llama', 'bard', 'openai'];
+            const ua = params.userAgent.toLowerCase();
+            const isLLMBot = llmBotPatterns.some(pattern => ua.includes(pattern)) || ua.includes('gpt');
+            if (isLLMBot) {
+                return {
+                    isBot: true,
+                    score: 1.0,
+                    confidence: 1.0,
+                    reasons: ['LLM Bot Pattern'],
+                    behavior: (0, Behavior_1.analyzeBehavior)(),
+                    timestamp: new Date(),
+                    path: ((_a = params.req) === null || _a === void 0 ? void 0 : _a.path) || '',
+                    userAgent: params.userAgent,
+                    ip: params.ip
+                };
+            }
+            // Then check custom rules
+            for (const rule of this.config.customRules) {
+                if (rule.test(params)) {
+                    score += rule.score;
+                    reasons.push(rule.name);
                 }
             }
-            const isBot = score >= (this.config.threshold || 0.8);
-            console.log('Final detection result:', { isBot, score, reasons });
+            // Use analyzeBehavior from Behavior.ts
+            const behavior = (0, Behavior_1.analyzeBehavior)();
             return {
-                isBot,
+                isBot: score >= this.config.threshold,
+                score,
                 confidence: score,
                 reasons,
-                behavior: {
-                    mouseMovements: 0,
-                    keystrokes: 0,
-                    timeOnPage: 0,
-                    scrolling: false
-                }
+                behavior,
+                timestamp: new Date(),
+                path: ((_b = params.req) === null || _b === void 0 ? void 0 : _b.path) || '',
+                userAgent: params.userAgent,
+                ip: params.ip
             };
-        });
-    }
-    analyzeBehavior(req) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.behaviorAnalyzer.analyze(req);
         });
     }
     middleware() {
@@ -124,20 +153,59 @@ class GuardianJS {
         });
     }
     detect(req) {
-        var _a, _b;
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
+            const userAgent = req.headers['user-agent'] || '';
+            const ip = req.ip || '';
+            // Check for LLM bots first - this is the most direct approach
+            const llmBotPatterns = ['gptbot', 'claude', 'anthropic', 'cohere', 'llama', 'bard', 'openai'];
+            const ua = userAgent.toLowerCase();
+            const isLLMBot = llmBotPatterns.some(pattern => ua.includes(pattern)) || ua.includes('gpt');
+            if (isLLMBot) {
+                return {
+                    isBot: true,
+                    score: 1.0,
+                    confidence: 1.0,
+                    reasons: ['LLM Bot Pattern'],
+                    behavior: this.config.useBehavior ? (0, Behavior_1.analyzeBehavior)() : {
+                        mouseMovements: 0,
+                        keystrokes: 0,
+                        timeOnPage: 0,
+                        scrolling: false
+                    },
+                    timestamp: new Date(),
+                    path: req.path || '',
+                    userAgent,
+                    ip
+                };
+            }
+            // Then check against our custom rules
+            const botCheck = yield this.isBot({ userAgent, ip, req });
+            if (botCheck.isBot) {
+                return botCheck;
+            }
+            // If not caught by custom rules, do deeper analysis
             const results = {
-                userAgent: (0, UserAgent_1.analyzeUA)(req.headers['user-agent'] || ''),
+                userAgent: (0, UserAgent_1.analyzeUA)(userAgent),
                 tls: this.config.useTLS ? yield (0, TLSFingerprint_1.analyzeTLS)(req) : null,
-                behavior: this.config.useBehavior ? yield (0, Behavior_1.analyzeBehavior)(req) : null
+                behavior: this.config.useBehavior ? (0, Behavior_1.analyzeBehavior)() : null
             };
             return {
-                verdict: Boolean(results.userAgent.isBot ||
-                    ((_a = results.tls) === null || _a === void 0 ? void 0 : _a.isSuspicious) ||
-                    ((_b = results.behavior) === null || _b === void 0 ? void 0 : _b.isBot)),
-                userAgent: results.userAgent,
-                tls: results.tls,
-                behavior: results.behavior
+                isBot: Boolean(results.userAgent.isBot ||
+                    ((_a = results.tls) === null || _a === void 0 ? void 0 : _a.isSuspicious)),
+                score: results.userAgent.isBot ? 1.0 : 0,
+                confidence: results.userAgent.isBot ? 1.0 : 0,
+                reasons: results.userAgent.isBot ? ['User Agent Analysis'] : [],
+                behavior: results.behavior || {
+                    mouseMovements: 0,
+                    keystrokes: 0,
+                    timeOnPage: 0,
+                    scrolling: false
+                },
+                timestamp: new Date(),
+                path: req.path || '',
+                userAgent,
+                ip
             };
         });
     }

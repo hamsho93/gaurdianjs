@@ -1,7 +1,7 @@
 {
-  "name": "bot-guardian-js",
+  "name": "@guardianjs/demo",
   "private": true,
-  "version": "1.0.6",
+  "version": "1.0.0",
   "description": "Demo application for GuardianJS",
   "main": "dist/server/index.js",
   "types": "dist/server/index.d.ts",
@@ -13,7 +13,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "bot-guardian-js": "^1.0.5",
+    "bot-guardian-js": "^1.0.6",
     "express": "^4.17.1"
   },
   "devDependencies": {

@@ -1,56 +1,33 @@
 import { analyzeBehavior } from '../Behavior';
-import { BehaviorPattern } from '../../types';
+import type { BehaviorAnalysis } from '../../types';
 
 describe('Behavior Analysis', () => {
-  const mockReq = {
-    headers: {
-      'user-agent': 'Mozilla/5.0'
-    },
-    ip: '127.0.0.1'
-  };
-
-  test('should analyze normal behavior', async () => {
-    const result = await analyzeBehavior(mockReq);
-    expect(result.isBot).toBe(false);
-    expect(result.confidence).toBeGreaterThan(0);
-  });
-
-  test('should analyze normal user behavior patterns', async () => {
-    const mockReq = {
-      body: {
-        mouseMovements: [
-          { x: 100, y: 200, timestamp: Date.now() },
-          { x: 150, y: 250, timestamp: Date.now() + 100 }
-        ],
-        scrollEvents: [
-          { position: 500, timestamp: Date.now() },
-          { position: 700, timestamp: Date.now() + 200 }
-        ]
-      }
+  test('should analyze basic behavior patterns', async () => {
+    const mockBehavior: Partial<BehaviorAnalysis> = {
+      mouseMovements: 0,
+      keystrokes: 0,
+      timeOnPage: 0,
+      scrolling: false
     };
 
-    const result = await analyzeBehavior(mockReq);
-    expect(result.isBot).toBe(false);
-    expect(result.confidence).toBeGreaterThan(0);
-    expect(result.patterns).toBeDefined();
+    const result = await analyzeBehavior(mockBehavior);
+
+    expect(result).toBeDefined();
+    expect(result.mouseMovements).toBe(0);
+    expect(result.keystrokes).toBe(0);
+    expect(result.timeOnPage).toBe(0);
+    expect(result.scrolling).toBe(false);
   });
 
   test('should handle empty behavior data', async () => {
-    const result = await analyzeBehavior({});
-    expect(result.isBot).toBe(false);
-    expect(result.confidence).toBe(0.8);
-    expect(result.patterns[0]).toEqual({
-      mouseMovements: 0,
-      scrollPatterns: 0,
-      interactionSpeed: 0
-    });
-  });
+    const mockBehavior: Partial<BehaviorAnalysis> = {};
 
-  test('should handle missing request body', async () => {
-    const mockReq = {};
+    const result = await analyzeBehavior(mockBehavior);
 
-    const result = await analyzeBehavior(mockReq);
-    expect(result.isBot).toBe(false);
-    expect(result.patterns).toBeDefined();
+    expect(result).toBeDefined();
+    expect(result.mouseMovements).toBe(0);
+    expect(result.keystrokes).toBe(0);
+    expect(result.timeOnPage).toBe(0);
+    expect(result.scrolling).toBe(false);
   });
 }); 

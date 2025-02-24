@@ -14,7 +14,7 @@
     "prebuild": "npm run clean",
     "build": "tsc",
     "postbuild": "cp package.json README.md dist/",
-    "test": "jest --testNamePattern=@integration",
+    "test": "jest",
     "test:all": "jest",
     "test:unit": "jest --testMatch '**/test/**/*.test.ts'",
     "prepare": "npm run build"

@@ -1,4 +1,4 @@
-const { default: GuardianJS } = require("bot-guardian-js");
+const { GuardianJS } = require("../../dist/index.js");
 // Add fetch polyfill
 global.fetch = require('node-fetch');
 
@@ -32,12 +32,20 @@ describe('GuardianJS Integration Tests', () => {
             useBehavior: true,
             threshold: 0.7,
             enableBehaviorAnalysis: true,
-            customRules: []
+            customRules: [
+                {
+                    name: 'Test Bot Rule',
+                    test: (params) => params.userAgent.includes('bot'),
+                    score: 1.0
+                }
+            ]
         });
     });
 
     test('@integration should initialize GuardianJS with correct configuration', () => {
         expect(guardian).toBeDefined();
+        expect(guardian.config.detectionThreshold).toBe(0.8);
+        expect(guardian.config.useBehavior).toBe(true);
         expect(guardian.config).toEqual({
             endpoint: 'http://localhost:3000/track',
             trackingEnabled: true,
@@ -48,7 +56,13 @@ describe('GuardianJS Integration Tests', () => {
             useBehavior: true,
             threshold: 0.7,
             enableBehaviorAnalysis: true,
-            customRules: []
+            customRules: [
+                {
+                    name: 'Test Bot Rule',
+                    test: (params) => params.userAgent.includes('bot'),
+                    score: 1.0
+                }
+            ]
         });
         expect(guardian.events).toEqual([]);
     });

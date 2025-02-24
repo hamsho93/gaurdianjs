@@ -176,7 +176,30 @@ exports.middleware = {
     close: exports.closeServer
 };
 function createGuardianMiddleware(config = {}) {
-    const guardian = new GuardianJS_1.GuardianJS(Object.assign({ useTLS: true, useBehavior: true }, config));
-    return guardian;
+    const guardian = new GuardianJS_1.GuardianJS(Object.assign({ threshold: 0.5, useBehavior: true, customRules: [] }, config));
+    return (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+        try {
+            const result = yield guardian.isBot({
+                userAgent: req.headers['user-agent'] || '',
+                ip: req.ip || '',
+                req
+            });
+            req.botDetection = {
+                timestamp: new Date(),
+                isBot: result.isBot,
+                confidence: result.confidence,
+                path: req.path,
+                userAgent: req.headers['user-agent'] || 'Unknown',
+                ip: req.ip || 'Unknown',
+                reasons: result.reasons,
+                behavior: result.behavior
+            };
+            next();
+        }
+        catch (error) {
+            console.error('GuardianJS error:', error);
+            next();
+        }
+    });
 }
 exports.createGuardianMiddleware = createGuardianMiddleware;
