@@ -1,14 +1,16 @@
 {
-  "name": "guardianjs-demo",
+  "name": "bot-guardian-js",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.6",
   "description": "Demo application for GuardianJS",
-  "main": "src/server/index.ts",
+  "main": "dist/server/index.js",
+  "types": "dist/server/index.d.ts",
   "scripts": {
     "start": "ts-node src/server/index.ts",
     "dev": "nodemon src/server/index.ts",
     "test": "jest --config jest.config.js",
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "bot-guardian-js": "^1.0.5",
