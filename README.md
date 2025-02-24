@@ -8,6 +8,7 @@ A powerful bot detection and prevention library for Node.js and web applications
 - 🔍 Behavioral Analysis
 - 🔐 TLS Fingerprinting
 - 📱 User Agent Analysis
+- 🤖 LLM & AI Bot Detection
 - ⚡ Real-time Tracking
 - 🛡️ Express/Connect Middleware
 - 📊 Detailed Analytics
@@ -44,6 +45,21 @@ const guardian = new GuardianJS({
                 ];
                 const ua = params.userAgent.toLowerCase();
                 return knownBots.some(bot => ua.includes(bot));
+            },
+            score: 1.0
+        },
+        {
+            name: 'LLM Bot Detection',
+            test: (params) => {
+                const llmBots = [
+                    'gptbot',
+                    'chatgpt-user',
+                    'oai-searchbot',
+                    'claude-web',
+                    'anthropic-ai'
+                ];
+                const ua = params.userAgent.toLowerCase();
+                return llmBots.some(bot => ua.includes(bot));
             },
             score: 1.0
         }
@@ -110,6 +126,18 @@ await guardian.flush();
 | threshold | number | 0.5 | Overall detection threshold |
 | enableBehaviorAnalysis | boolean | true | Enable behavior tracking |
 | customRules | array | [] | Custom detection rules |
+
+## LLM Bot Detection
+
+GuardianJS automatically detects AI-powered bots from major providers including:
+
+- OpenAI's GPTBot
+- ChatGPT User Agent
+- OpenAI's SearchBot
+- Claude/Anthropic crawlers
+- Other LLM-based crawlers
+
+This helps protect your content from unauthorized scraping by AI systems.
 
 ## Demo Application
 
@@ -198,6 +226,7 @@ The test suite includes:
 - Event tracking verification
 - Middleware functionality
 - Configuration validation
+- LLM bot detection verification
 
 ## Contributing
 
