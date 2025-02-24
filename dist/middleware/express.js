@@ -1,9 +1,18 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.middleware = exports.closeServer = exports.startServer = exports.createMiddleware = exports.setGuardian = exports.guardian = exports.app = void 0;
+exports.createGuardianMiddleware = exports.middleware = exports.closeServer = exports.startServer = exports.createMiddleware = exports.setGuardian = exports.guardian = exports.app = void 0;
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const GuardianJS_1 = require("../core/GuardianJS");
@@ -97,9 +106,9 @@ exports.app.get('/', (_req, res) => {
   `);
 });
 // Track behavioral data
-exports.app.post('/track', validateTrackingData, async (req, res, next) => {
+exports.app.post('/track', validateTrackingData, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = await exports.guardian.detect(req);
+        const result = yield exports.guardian.detect(req);
         if (!result) {
             throw new DetectionError('Detection failed', 500);
         }
@@ -113,7 +122,7 @@ exports.app.post('/track', validateTrackingData, async (req, res, next) => {
             next(new DetectionError('Unknown error', 500));
         }
     }
-});
+}));
 // Get dashboard data
 exports.app.get('/data', (_req, res, next) => {
     try {
@@ -138,7 +147,7 @@ const createMiddleware = () => {
     return app;
 };
 exports.createMiddleware = createMiddleware;
-const startServer = async (port = 3000) => {
+const startServer = (port = 3000) => __awaiter(void 0, void 0, void 0, function* () {
     if (isNaN(port) || port < 0 || port > 65535) {
         throw new Error('Invalid port number');
     }
@@ -148,9 +157,9 @@ const startServer = async (port = 3000) => {
             resolve(server);
         }).on('error', reject);
     });
-};
+});
 exports.startServer = startServer;
-const closeServer = async (server) => {
+const closeServer = (server) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve) => {
         if (server.listening) {
             server.close(() => resolve());
@@ -159,10 +168,15 @@ const closeServer = async (server) => {
             resolve();
         }
     });
-};
+});
 exports.closeServer = closeServer;
 exports.middleware = {
     create: exports.createMiddleware,
     start: exports.startServer,
     close: exports.closeServer
 };
+function createGuardianMiddleware(config = {}) {
+    const guardian = new GuardianJS_1.GuardianJS(Object.assign({ useTLS: true, useBehavior: true }, config));
+    return guardian;
+}
+exports.createGuardianMiddleware = createGuardianMiddleware;

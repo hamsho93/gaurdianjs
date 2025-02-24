@@ -1,6 +1,7 @@
 import { GuardianJS } from '../../core/GuardianJS';
 import express, { Request, Response } from 'express';
 import request from 'supertest';
+import { GuardianConfig } from '../../types';
 
 describe('End-to-End Bot Detection', () => {
   let app: express.Application;
@@ -8,10 +9,11 @@ describe('End-to-End Bot Detection', () => {
 
   beforeAll(() => {
     app = express();
-    guardian = new GuardianJS({
+    const config: GuardianConfig = {
       useTLS: true,
       useBehavior: true
-    });
+    };
+    guardian = new GuardianJS(config);
 
     app.use(express.json());
     app.use(guardian.middleware());

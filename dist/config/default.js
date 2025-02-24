@@ -2,14 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.defaultConfig = void 0;
 exports.defaultConfig = {
-    endpoint: 'http://localhost:3000/track',
+    endpoint: 'https://api.guardian.example.com',
     trackingEnabled: true,
-    detectionThreshold: 0.8,
+    detectionThreshold: 0.5,
     trackingInterval: 1000,
-    bufferSize: 10,
+    bufferSize: 1000,
     useTLS: true,
     useBehavior: true,
-    threshold: 0.7,
+    threshold: 0.8,
     enableBehaviorAnalysis: true,
     customRules: []
 };
+exports.default = exports.defaultConfig;

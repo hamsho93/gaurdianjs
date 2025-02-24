@@ -3,7 +3,9 @@ import { analyzeUA, UAAnalysis } from './UserAgent';
 import { analyzeTLS } from './TLSFingerprint';
 import { analyzeBehavior } from './Behavior';
 import { defaultConfig } from '../config/default';
-import { GuardianConfig, TrackingEvent, TLSAnalysis, BehaviorAnalysis } from '../types';
+import { GuardianConfig, TrackingEvent, TLSAnalysis, BehaviorAnalysis, BotDetectionResponse } from '../types';
+import fetch from 'cross-fetch';
+import { BehaviorAnalyzer } from './Behavior';
 
 export interface DetectionResult {
   verdict: boolean;
@@ -12,15 +14,37 @@ export interface DetectionResult {
   behavior: BehaviorAnalysis | null;
 }
 
+interface DetectionParams {
+  userAgent: string;
+  ip: string;
+  req?: any;
+}
+
 export class GuardianJS {
   private config: GuardianConfig;
   private events: TrackingEvent[] = [];
+  private behaviorAnalyzer: BehaviorAnalyzer;
 
-  constructor(userConfig: Partial<GuardianConfig> = {}) {
+  constructor(config: GuardianConfig = {}) {
     this.config = {
-      ...defaultConfig,
-      ...userConfig
+      endpoint: config.endpoint || 'http://localhost:3000/api/detect',
+      trackingEnabled: config.trackingEnabled ?? true,
+      threshold: config.threshold || 0.8,
+      detectionThreshold: config.detectionThreshold || 0.5,
+      trackingInterval: config.trackingInterval || 1000,
+      bufferSize: config.bufferSize || 1000,
+      useTLS: config.useTLS ?? true,
+      maxRetries: config.maxRetries || 3,
+      timeout: config.timeout || 5000,
+      cacheSize: config.cacheSize || 100,
+      useBehavior: config.useBehavior ?? true,
+      enableBehaviorAnalysis: config.enableBehaviorAnalysis ?? true,
+      customRules: config.customRules || []
     };
+    this.behaviorAnalyzer = new BehaviorAnalyzer();
+    
+    // Log configuration for debugging
+    console.log('GuardianJS initialized with config:', this.config);
   }
 
   track(event: TrackingEvent): void {
@@ -38,7 +62,7 @@ export class GuardianJS {
     if (this.events.length === 0) return;
 
     try {
-      const response = await fetch(this.config.endpoint, {
+      const response = await fetch(this.config.endpoint || defaultConfig.endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,26 +78,50 @@ export class GuardianJS {
     }
   }
 
-  async isBot(params: { userAgent: string; ip: string; req?: any }): Promise<boolean> {
-    const { userAgent, ip, req } = params;
+  async isBot(params: DetectionParams): Promise<BotDetectionResponse> {
+    console.log('Checking bot detection for:', params);
     
-    if (/bot|crawler|spider|googlebot/i.test(userAgent)) {
-      return true;
+    let score = 0;
+    const reasons: string[] = [];
+
+    // Apply custom rules
+    if (this.config.customRules && this.config.customRules.length > 0) {
+      console.log('Applying custom rules...');
+      
+      for (const rule of this.config.customRules) {
+        try {
+          console.log(`Testing rule: ${rule.name}`);
+          const ruleResult = await Promise.resolve(rule.test(params));
+          
+          if (ruleResult) {
+            score += rule.score;
+            reasons.push(rule.name);
+            console.log(`Rule ${rule.name} matched! Score: ${score}`);
+          }
+        } catch (error) {
+          console.error(`Error in rule ${rule.name}:`, error);
+        }
+      }
     }
 
-    if (req && (this.config.useTLS || this.config.useBehavior)) {
-      const results = {
-        tls: this.config.useTLS ? await analyzeTLS(req) : null,
-        behavior: this.config.useBehavior ? await analyzeBehavior(req) : null
-      };
+    const isBot = score >= (this.config.threshold || 0.8);
+    console.log('Final detection result:', { isBot, score, reasons });
 
-      return Boolean(
-        results.tls?.isSuspicious ||
-        results.behavior?.isBot
-      );
-    }
+    return {
+      isBot,
+      confidence: score,
+      reasons,
+      behavior: {
+        mouseMovements: 0,
+        keystrokes: 0,
+        timeOnPage: 0,
+        scrolling: false
+      }
+    };
+  }
 
-    return false;
+  private async analyzeBehavior(req: any): Promise<BehaviorAnalysis> {
+    return this.behaviorAnalyzer.analyze(req);
   }
 
   middleware() {
@@ -82,8 +130,8 @@ export class GuardianJS {
       const ip = req.ip;
 
       const isBot = await this.isBot({ userAgent, ip, req });
-      if (isBot) {
-        return res.status(403).json({ error: 'Bot detected' });
+      if (isBot.isBot) {
+        return res.status(403).json({ error: 'Bot detected', reasons: isBot.reasons });
       }
 
       next();

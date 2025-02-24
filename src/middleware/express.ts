@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction, Application } from 'express';
 import path from 'path';
 import { GuardianJS } from '../core/GuardianJS';
 import { Server, IncomingMessage, ServerResponse } from 'http';
+import { GuardianConfig } from '../types';
 
 export const app = express();
 export let guardian = new GuardianJS({ 
@@ -177,4 +178,14 @@ export const middleware = {
   create: createMiddleware,
   start: startServer,
   close: closeServer
-}; 
+};
+
+export function createGuardianMiddleware(config: GuardianConfig = {}) {
+  const guardian = new GuardianJS({
+    useTLS: true,
+    useBehavior: true,
+    ...config
+  });
+
+  return guardian;
+} 

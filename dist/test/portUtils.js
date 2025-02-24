@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -13,7 +22,7 @@ const validateTestPort = (port) => {
     return true;
 };
 exports.validateTestPort = validateTestPort;
-const getAvailablePort = async (startPort = 3000) => {
+const getAvailablePort = (startPort = 3000) => __awaiter(void 0, void 0, void 0, function* () {
     const server = net_1.default.createServer();
     server.unref(); // Prevent keeping the process alive
     return new Promise((resolve, reject) => {
@@ -33,16 +42,16 @@ const getAvailablePort = async (startPort = 3000) => {
             });
         });
     });
-};
+});
 exports.getAvailablePort = getAvailablePort;
-const getTestPorts = async (count = 1) => {
+const getTestPorts = (count = 1) => __awaiter(void 0, void 0, void 0, function* () {
     const ports = [];
     let lastPort = 3000;
     for (let i = 0; i < count; i++) {
-        const port = await (0, exports.getAvailablePort)(lastPort);
+        const port = yield (0, exports.getAvailablePort)(lastPort);
         ports.push(port);
         lastPort = port + 1;
     }
     return ports;
-};
+});
 exports.getTestPorts = getTestPorts;

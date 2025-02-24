@@ -7,7 +7,9 @@ import type {
   TrackingEvent,
   TLSAnalysis,
   BehaviorAnalysis,
-  CustomRule
+  CustomRule,
+  DetectionResult,
+  BotDetectionResponse
 } from './types';
 
 // Export utility functions
@@ -28,8 +30,19 @@ export type {
   TrackingEvent,
   TLSAnalysis,
   BehaviorAnalysis,
-  CustomRule
+  CustomRule,
+  DetectionResult,
+  BotDetectionResponse
 };
 
 // Default export
-export default GuardianJS; 
+export default GuardianJS;
+
+export * from './types';
+export * from './core/GuardianJS';
+export * from './middleware/express';
+export * from './middleware/guardian';
+
+// Export classes and functions
+export { createGuardianMiddleware } from './middleware/express';
+export { guardianMiddleware } from './middleware/guardian'; 

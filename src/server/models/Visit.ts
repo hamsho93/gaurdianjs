@@ -1,20 +1,29 @@
 import mongoose from 'mongoose';
+import { DetectionResult } from '../../types';
 
-const eventSchema = new mongoose.Schema({
-  type: { type: String, required: true },
-  target: String,
-  timestamp: { type: Number, default: Date.now }
-}, { _id: false, strict: false });
-
-const visitSchema = new mongoose.Schema({
-  clientId: { type: String, required: true },
-  sessionId: { type: String, required: true },
-  userAgent: String,
-  isBot: { type: Boolean, default: false },
-  events: [eventSchema]
-}, { 
-  timestamps: true,
-  strict: false 
+const visitSchema = new mongoose.Schema<DetectionResult>({
+  timestamp: { type: Date, required: true },
+  isBot: { type: Boolean, required: true },
+  confidence: { type: Number, required: true },
+  path: { type: String, required: true },
+  userAgent: { type: String, required: true },
+  ip: { type: String, required: true },
+  reasons: [String],
+  behavior: {
+    mouseMovements: Number,
+    keystrokes: Number,
+    timeOnPage: Number,
+    scrolling: Boolean,
+    score: Number,
+    patterns: [{
+      mouseMovements: Number,
+      scrollPatterns: Number,
+      interactionSpeed: Number
+    }],
+    anomalies: [mongoose.Schema.Types.Mixed],
+    isBot: Boolean,
+    confidence: Number
+  }
 });
 
-export const Visit = mongoose.model('Visit', visitSchema); 
+export const Visit = mongoose.model<DetectionResult>('Visit', visitSchema); 

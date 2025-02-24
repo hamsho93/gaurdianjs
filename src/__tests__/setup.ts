@@ -5,25 +5,14 @@ import mongoose from 'mongoose';
 let mongod: MongoMemoryServer;
 
 beforeAll(async () => {
-  // Ensure we're disconnected before creating a new connection
-  await mongoose.disconnect();
-  
   mongod = await MongoMemoryServer.create();
   const uri = mongod.getUri();
-  await mongoose.connect(uri, {
-    // Add mongoose connection options
-    autoCreate: true,
-    autoIndex: true,
-  });
+  await mongoose.connect(uri);
 });
 
 afterAll(async () => {
-  if (mongoose.connection.readyState !== 0) {
-    await mongoose.disconnect();
-  }
-  if (mongod) {
-    await mongod.stop();
-  }
+  await mongoose.connection.close();
+  await mongod.stop();
 });
 
 afterEach(async () => {

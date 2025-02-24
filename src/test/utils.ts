@@ -1,5 +1,6 @@
 import { Express } from 'express';
 import request from 'supertest';
+import { DetectionResult } from '../types';
 
 export const cleanupServer = async (app: Express): Promise<void> => {
   await new Promise(resolve => setTimeout(resolve, 100));
@@ -25,4 +26,10 @@ export const makeRequest = (app: Express) => {
       mouseMovements: mockMouseMovements,
       scrollEvents: mockScrollEvents
     });
+};
+
+export const createTestVisit = async (app: Express, visit: Partial<DetectionResult>) => {
+  return request(app)
+    .post('/api/visits')
+    .send(visit);
 }; 

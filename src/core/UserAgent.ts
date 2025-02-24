@@ -20,3 +20,16 @@ export function analyzeUA(userAgent: string): UAAnalysis {
     device: result.device.type || 'desktop'
   };
 }
+
+export class UserAgentAnalyzer {
+  private parser: UAParser;
+
+  constructor() {
+    this.parser = new UAParser();
+  }
+
+  analyze(userAgent: string) {
+    this.parser.setUA(userAgent);
+    return this.parser.getResult();
+  }
+}

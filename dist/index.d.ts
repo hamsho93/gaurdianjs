@@ -1,8 +1,14 @@
 import { GuardianJS } from './core/GuardianJS';
-import type { GuardianConfig, TrackingEvent, TLSAnalysis, BehaviorAnalysis, CustomRule } from './types';
+import type { GuardianConfig, TrackingEvent, TLSAnalysis, BehaviorAnalysis, CustomRule, DetectionResult, BotDetectionResponse } from './types';
 import { analyzeTLS } from './core/TLSFingerprint';
 import { analyzeBehavior } from './core/Behavior';
 import { validateConfig } from './utils/validation';
 export { GuardianJS, analyzeTLS, analyzeBehavior, validateConfig };
-export type { GuardianConfig, TrackingEvent, TLSAnalysis, BehaviorAnalysis, CustomRule };
+export type { GuardianConfig, TrackingEvent, TLSAnalysis, BehaviorAnalysis, CustomRule, DetectionResult, BotDetectionResponse };
 export default GuardianJS;
+export * from './types';
+export * from './core/GuardianJS';
+export * from './middleware/express';
+export * from './middleware/guardian';
+export { createGuardianMiddleware } from './middleware/express';
+export { guardianMiddleware } from './middleware/guardian';

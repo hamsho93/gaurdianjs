@@ -6,12 +6,7 @@ global.fetch = jest.fn(() => Promise.resolve({
     text: () => Promise.resolve('')
 }));
 // Mock console methods
-global.console = {
-    ...console,
-    error: jest.fn(),
-    warn: jest.fn(),
-    log: jest.fn(),
-};
+global.console = Object.assign(Object.assign({}, console), { error: jest.fn(), warn: jest.fn(), log: jest.fn() });
 // Use fake timers
 jest.useFakeTimers();
 // Cleanup

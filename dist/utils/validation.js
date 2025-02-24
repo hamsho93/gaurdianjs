@@ -1,13 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateConfig = validateConfig;
+exports.validateConfig = void 0;
 const default_1 = require("../config/default");
 function validateConfig(config) {
-    return {
-        ...default_1.defaultConfig,
-        ...config
-    };
+    return Object.assign(Object.assign({}, default_1.defaultConfig), config);
 }
+exports.validateConfig = validateConfig;
 const validateArrays = (list) => {
     if (!Array.isArray(list.ips)) {
         throw new Error('IPs must be an array');
