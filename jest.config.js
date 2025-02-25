@@ -1,19 +1,27 @@
 /** @type {import('jest').Config} */
 module.exports = {
-    preset: 'ts-jest',
     testEnvironment: 'node',
-    moduleFileExtensions: ['ts', 'js'],
     transform: {
-        '^.+\\.(ts|tsx)$': 'ts-jest'
+        '^.+\\.(ts|js)$': 'ts-jest'
     },
-    testMatch: ['**/__tests__/**/*.test.(ts|js)', '**/test/**/*.test.(ts|js)'],
-    modulePathIgnorePatterns: ['<rootDir>/guardianjs-demo/'],
+    moduleFileExtensions: ['ts', 'js', 'json'],
+    testPathIgnorePatterns: [
+        '/node_modules/',
+        '/dist/',
+        '/test-guardianjs/',
+        '/guardianjs-demo/'
+    ],
+    transformIgnorePatterns: [
+        '/node_modules/(?!(node-fetch|data-uri-to-buffer|fetch-blob|formdata-polyfill)/).+\\.js$'
+    ],
     moduleNameMapper: {
-        '^bot-guardian-js$': '<rootDir>/dist'
+        '^bot-guardian-js$': '<rootDir>/src/index.ts'
     },
+    testTimeout: 15000,
     globals: {
         'ts-jest': {
             tsconfig: 'tsconfig.json'
         }
-    }
+    },
+    setupFilesAfterEnv: ['./jest.setup.js']
 }; 

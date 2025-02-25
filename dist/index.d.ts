@@ -3,7 +3,10 @@ import type { GuardianConfig, TrackingEvent, TLSAnalysis, BehaviorAnalysis, Cust
 import { analyzeTLS } from './core/TLSFingerprint';
 import { analyzeBehavior } from './core/Behavior';
 import { validateConfig } from './utils/validation';
-export { GuardianJS, analyzeTLS, analyzeBehavior, validateConfig };
+import * as nextjs from './integrations/nextjs';
+import * as express from './integrations/express';
+import * as react from './integrations/react';
+export { GuardianJS, analyzeTLS, analyzeBehavior, validateConfig, nextjs, express, react };
 export type { GuardianConfig, TrackingEvent, TLSAnalysis, BehaviorAnalysis, CustomRule };
 export default GuardianJS;
 export * from './types';

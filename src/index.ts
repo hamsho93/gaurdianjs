@@ -15,12 +15,20 @@ import { analyzeTLS } from './core/TLSFingerprint';
 import { analyzeBehavior } from './core/Behavior';
 import { validateConfig } from './utils/validation';
 
+// Export framework integrations
+import * as nextjs from './integrations/nextjs';
+import * as express from './integrations/express';
+import * as react from './integrations/react';
+
 // Export everything
 export {
   GuardianJS,
   analyzeTLS,
   analyzeBehavior,
-  validateConfig
+  validateConfig,
+  nextjs,
+  express,
+  react
 };
 
 // Export types

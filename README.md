@@ -21,14 +21,79 @@ npm install bot-guardian-js
 
 ## Quick Start
 
+The easiest way to get started is to run our automatic setup:
+
+```bash
+npx guardian-setup
+```
+
+This will detect your framework (Next.js, Express, or React) and set up the necessary files automatically.
+
+## Framework-Specific Integration
+
+### Express.js
+
+```javascript
+const express = require('express');
+const { createGuardianMiddleware } = require('bot-guardian-js/express');
+
+const app = express();
+
+// Add GuardianJS middleware with one line
+app.use(createGuardianMiddleware());
+
+app.get('/', (req, res) => {
+  res.json({
+    message: req.botDetection.isBot ? 'Hello Bot!' : 'Hello Human!',
+    botDetection: req.botDetection
+  });
+});
+```
+
+### Next.js
+
+```javascript
+// pages/api/example.js
+import withGuardian from '../../lib/guardian';
+
+function handler(req, res) {
+  // Access bot detection results
+  const botDetection = req.botDetection;
+  
+  res.status(200).json({ 
+    message: botDetection.isBot ? 'Hello Bot!' : 'Hello Human!',
+    botDetection
+  });
+}
+
+export default withGuardian(handler);
+```
+
+### React
+
+```jsx
+// index.js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+import { GuardianProvider } from 'bot-guardian-js/react';
+
+ReactDOM.render(
+  <GuardianProvider>
+    <App />
+  </GuardianProvider>,
+  document.getElementById('root')
+);
+```
+
+## Advanced Configuration
+
+For more control, you can configure GuardianJS with custom options:
+
 ```javascript
 const { GuardianJS } = require('bot-guardian-js');
 
 const guardian = new GuardianJS({
-    endpoint: 'http://your-api.com/track',
-    trackingEnabled: true,
-    detectionThreshold: 0.8,
-    useTLS: true,
     useBehavior: true,
     threshold: 0.5,
     customRules: [
@@ -67,66 +132,6 @@ const guardian = new GuardianJS({
 });
 ```
 
-## Usage
-
-### As Express Middleware
-
-```javascript
-const express = require('express');
-const app = express();
-
-// Add GuardianJS middleware
-app.use(async (req, res, next) => {
-  try {
-    const result = await guardian.isBot({
-      userAgent: req.headers['user-agent'] || '',
-      ip: req.ip || '',
-      req
-    });
-    
-    req.botDetection = result;
-    next();
-  } catch (error) {
-    console.error('GuardianJS error:', error);
-    next();
-  }
-});
-
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Hello World',
-    botDetection: req.botDetection
-  });
-});
-```
-
-### Direct Bot Detection
-
-```javascript
-const result = await guardian.detect(req);
-console.log(result);
-// {
-//   behavior: { ... },
-//   tls: { ... },
-//   userAgent: { ... },
-//   verdict: false
-// }
-```
-
-## Event Tracking
-
-```javascript
-await guardian.track({
-    type: 'click',
-    x: 100,
-    y: 200,
-    timestamp: Date.now()
-});
-
-// Flush events manually
-await guardian.flush();
-```
-
 ## Configuration Options
 
 | Option | Type | Default | Description |
@@ -158,36 +163,6 @@ This helps protect your content from unauthorized scraping by AI systems.
 
 GuardianJS can be used with multiple web frameworks through its API service and language-specific clients.
 
-### Node.js/Express Integration
-
-```javascript
-const express = require('express');
-const { GuardianJS } = require('bot-guardian-js');
-
-const app = express();
-const guardian = new GuardianJS({
-  useBehavior: true,
-  threshold: 0.5
-});
-
-// Add middleware
-app.use(async (req, res, next) => {
-  try {
-    const result = await guardian.isBot({
-      userAgent: req.headers['user-agent'] || '',
-      ip: req.ip || '',
-      req
-    });
-    
-    req.botDetection = result;
-    next();
-  } catch (error) {
-    console.error('GuardianJS error:', error);
-    next();
-  }
-});
-```
-
 ### Python/Flask Integration
 
 For Python applications, you can use GuardianJS as a REST API service:
@@ -195,7 +170,6 @@ For Python applications, you can use GuardianJS as a REST API service:
 1. First, start the GuardianJS API server:
 
 ```javascript
-// guardian-api.js
 const { createApiServer } = require('bot-guardian-js');
 
 const app = createApiServer();
@@ -294,19 +268,6 @@ A complete demo implementation is available in the `guardianjs-demo` folder. The
 - Integration tests
 - Basic analytics dashboard
 
-### Demo Structure
-
-```
-guardianjs-demo/
-src/
-  ├── server/
-  │   ├── __tests__/
-  │   │   └── server.test.ts   # Integration tests
-  │   └── index.ts             # Express server setup
-  └── dashboard/
-      └── index.html           # Analytics dashboard
-```
-
 ### Running the Demo
 
 ```bash
@@ -316,11 +277,11 @@ npm run dev    # Start development server
 npm test       # Run integration tests
 ```
 
+View dashboard at http://localhost:3001/dashboard
+
 ## Testing Bot Detection
 
 You can test the bot detection by sending requests with different user agents:
-
-View dashboard at http://localhost:3001/dashboard
 
 ```bash
 # Test with a regular browser
@@ -333,11 +294,9 @@ curl -A "Googlebot/2.1 (+http://www.google.com/bot.html)" http://localhost:3001/
 curl -A "GPTBot/1.0" http://localhost:3001/
 ```
 
-The response will include the detection results, showing whether the request was identified as a bot and the confidence score.
-
 ## Response Structure
 
-The `isBot()` method returns:
+The bot detection returns:
 
 ```javascript
 {
@@ -361,12 +320,6 @@ Run the test suite:
 ```bash
 npm test
 ```
-
-The test suite includes:
-- Integration tests for bot detection
-- Middleware functionality
-- Configuration validation
-- LLM bot detection verification
 
 ## Contributing
 

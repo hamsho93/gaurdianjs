@@ -26,4 +26,10 @@ afterEach(() => {
 
 afterAll(() => {
   jest.useRealTimers();
+});
+
+describe('Setup', () => {
+  test('placeholder test', () => {
+    expect(true).toBe(true);
+  });
 }); 

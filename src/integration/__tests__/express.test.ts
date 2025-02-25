@@ -3,6 +3,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import { GuardianJS, DetectionResult } from '../../core/GuardianJS';
 import { DetectionResult as DetectionResultType } from '../../types';
 import { guardianMiddleware } from '../../middleware/guardian';
+import { createGuardianMiddleware } from '../../integrations/express';
 
 describe('Express Middleware Integration', () => {
   let app: express.Application;
@@ -11,9 +12,19 @@ describe('Express Middleware Integration', () => {
     app = express();
     const guardian = new GuardianJS();
     app.use(express.json());
-    app.use((req: Request, res: Response, next: NextFunction) => {
-      guardian.middleware()(req, res, next);
-    });
+    app.use(createGuardianMiddleware({
+      threshold: 0.5,
+      blockBots: true,
+      customRules: [
+        {
+          name: 'Test Bot Detection',
+          test: (params) => {
+            return params.userAgent.toLowerCase().includes('googlebot');
+          },
+          score: 1.0
+        }
+      ]
+    }));
 
     app.get('/test', (req: Request, res: Response) => {
       if (req.botDetection?.isBot) {

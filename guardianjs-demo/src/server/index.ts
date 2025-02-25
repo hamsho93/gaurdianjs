@@ -90,6 +90,7 @@ app.get('/data', async (req, res) => {
         type: 'Browser',
         userAgent: req.headers['user-agent'],
         confidence: 0,
+        score: 0,
         timestamp: new Date(),
         behavior: {
           mouseMovements: 0,
