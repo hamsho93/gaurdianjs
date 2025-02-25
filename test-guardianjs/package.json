@@ -1,15 +1,17 @@
 {
   "name": "test-guardianjs",
   "version": "1.0.0",
+  "description": "Test suite for GuardianJS cross-platform integration",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "test": "node test.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
-    "@guardianjs/core": "file:../guardianjs-core-1.0.0.tgz"
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.7"
   }
 }
