@@ -47,4 +47,13 @@ export * from './middleware/guardian';
 
 // Export classes and functions
 export { createGuardianMiddleware } from './middleware/express';
-export { guardianMiddleware } from './middleware/guardian'; 
+export { guardianMiddleware } from './middleware/guardian';
+
+// Direct export of core functionality
+export { GuardianJS } from './core/GuardianJS';
+
+// Export Node.js client
+export { GuardianClient } from './client/node';
+
+// Export API server
+export { createApiServer } from './api/server'; 

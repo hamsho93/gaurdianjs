@@ -69,19 +69,34 @@ const guardian = new GuardianJS({
 
 ## Usage
 
-### As Middleware
+### As Express Middleware
 
 ```javascript
 const express = require('express');
 const app = express();
 
 // Add GuardianJS middleware
-app.use(guardian.middleware());
+app.use(async (req, res, next) => {
+  try {
+    const result = await guardian.isBot({
+      userAgent: req.headers['user-agent'] || '',
+      ip: req.ip || '',
+      req
+    });
+    
+    req.botDetection = result;
+    next();
+  } catch (error) {
+    console.error('GuardianJS error:', error);
+    next();
+  }
+});
 
-// Bot detection results will be available in req
-app.get('/', async (req, res) => {
-    const result = await guardian.detect(req);
-    res.json({ result });
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Hello World',
+    botDetection: req.botDetection
+  });
 });
 ```
 
@@ -168,6 +183,25 @@ npm install
 npm run dev    # Start development server
 npm test       # Run integration tests
 ```
+
+
+## Testing Bot Detection
+
+You can test the bot detection by sending requests with different user agents:
+
+view dashboard at http://localhost:3001/dashboard
+```bash
+# Test with a regular browser
+curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" http://localhost:3001/
+
+# Test with a known bot
+curl -A "Googlebot/2.1 (+http://www.google.com/bot.html)" http://localhost:3001/
+
+# Test with an LLM bot
+curl -A "GPTBot/1.0" http://localhost:3001/
+```
+
+The response will include the detection results, showing whether the request was identified as a bot and the confidence score.
 
 ### Key Features
 

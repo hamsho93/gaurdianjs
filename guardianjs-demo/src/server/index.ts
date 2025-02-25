@@ -61,6 +61,7 @@ app.use(async (req, res, next) => {
       timestamp: new Date(),
       isBot: result.isBot,
       confidence: result.confidence,
+      score: result.score,
       path: req.path,
       userAgent: req.headers['user-agent'] || 'Unknown',
       ip: req.ip || 'Unknown',
