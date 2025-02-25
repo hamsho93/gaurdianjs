@@ -14,8 +14,8 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.guardianMiddleware = exports.createGuardianMiddleware = exports.validateConfig = exports.analyzeBehavior = exports.analyzeTLS = exports.GuardianJS = void 0;
-// Import and export the main class
+exports.createApiServer = exports.GuardianClient = exports.guardianMiddleware = exports.createGuardianMiddleware = exports.validateConfig = exports.analyzeBehavior = exports.analyzeTLS = exports.GuardianJS = void 0;
+// Import the main class
 const GuardianJS_1 = require("./core/GuardianJS");
 Object.defineProperty(exports, "GuardianJS", { enumerable: true, get: function () { return GuardianJS_1.GuardianJS; } });
 // Export utility functions
@@ -37,3 +37,9 @@ var express_1 = require("./middleware/express");
 Object.defineProperty(exports, "createGuardianMiddleware", { enumerable: true, get: function () { return express_1.createGuardianMiddleware; } });
 var guardian_1 = require("./middleware/guardian");
 Object.defineProperty(exports, "guardianMiddleware", { enumerable: true, get: function () { return guardian_1.guardianMiddleware; } });
+// Export Node.js client
+var node_1 = require("./client/node");
+Object.defineProperty(exports, "GuardianClient", { enumerable: true, get: function () { return node_1.GuardianClient; } });
+// Export API server
+var server_1 = require("./api/server");
+Object.defineProperty(exports, "createApiServer", { enumerable: true, get: function () { return server_1.createApiServer; } });

@@ -1,4 +1,4 @@
-// Import and export the main class
+// Import the main class
 import { GuardianJS } from './core/GuardianJS';
 
 // Export types
@@ -7,9 +7,7 @@ import type {
   TrackingEvent,
   TLSAnalysis,
   BehaviorAnalysis,
-  CustomRule,
-  DetectionResult as TypesDetectionResult,
-  BotDetectionResponse
+  CustomRule
 } from './types';
 
 // Export utility functions
@@ -25,14 +23,13 @@ export {
   validateConfig
 };
 
+// Export types
 export type {
   GuardianConfig,
   TrackingEvent,
   TLSAnalysis,
   BehaviorAnalysis,
-  CustomRule,
-  TypesDetectionResult as DetectionResult,
-  BotDetectionResponse
+  CustomRule
 };
 
 // Default export
@@ -48,9 +45,6 @@ export * from './middleware/guardian';
 // Export classes and functions
 export { createGuardianMiddleware } from './middleware/express';
 export { guardianMiddleware } from './middleware/guardian';
-
-// Direct export of core functionality
-export { GuardianJS } from './core/GuardianJS';
 
 // Export Node.js client
 export { GuardianClient } from './client/node';
